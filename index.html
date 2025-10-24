@@ -1,13 +1,139 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DJ Estadística 1987</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DJ Estadística 1987 🎶</title>
+  <style>
+    /* ======== ESTILO GENERAL ======== */
+    :root {
+      --violet: #8b5cf6;
+      --teal: #14b8a6;
+      --dark: #0f0f16;
+      --light: #f1f5f9;
+      --card-bg: rgba(255, 255, 255, 0.05);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', system-ui, sans-serif;
+      color: var(--light);
+      background: linear-gradient(135deg, var(--dark), #1a0b2e);
+      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      background: linear-gradient(90deg, var(--violet), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.tagline {
+      margin-top: 8px;
+      font-size: 1.1rem;
+      color: #a5b4fc;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.3rem;
+      color: var(--teal);
+    }
+
+    .card p {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #a5b4fc;
+      padding: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      p.tagline {
+        font-size: 1rem;
+      }
+      .card {
+        padding: 16px;
+      }
+    }
+  </style>
 </head>
-<body style="font-family: Arial; background-color: #0b0b0f; color: #6ee7d1; text-align: center; padding: 80px;">
-  <h1>🎶 DJ Estadística 1987 🎶</h1>
-  <p>¡Hola mundo! Tu sitio web de GitHub Pages está funcionando 🚀</p>
-  <p>Próximamente: Calculadoras estadísticas, música y datos 💾📊</p>
+<body>
+  <header>
+    <h1>DJ Estadística 1987 🎶</h1>
+    <p class="tagline">Dándole ritmo a los datos — calculadoras estadísticas online</p>
+  </header>
+
+  <main>
+    <div class="card">
+      <h3>📈 Media y Varianza</h3>
+      <p>Calculadora rápida para media, mediana, moda y desviación estándar.</p>
+    </div>
+    <div class="card">
+      <h3>🎯 Probabilidad</h3>
+      <p>Distribuciones Binomial, Normal y Poisson (próximamente).</p>
+    </div>
+    <div class="card">
+      <h3>📊 Regresión Lineal</h3>
+      <p>Analiza relaciones entre variables y calcula correlaciones.</p>
+    </div>
+    <div class="card">
+      <h3>🧮 ANOVA</h3>
+      <p>Comparación de medias entre grupos con análisis de varianza.</p>
+    </div>
+    <div class="card">
+      <h3>💾 Análisis CSV</h3>
+      <p>Sube tu archivo CSV y analiza tus datos directamente en la web.</p>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 DJ Estadística 1987 — Creado con ritmo 🎵
+  </footer>
 </body>
 </html>
+
