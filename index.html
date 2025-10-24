@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DJ Estadística 1987 — Dándole ritmo a los datos</title>
+  <meta name="description" content="Calculadoras estadísticas online - DJ Estadística 1987. Media, mediana, varianza, regresión y más.">
+  <style>
+    /* Paleta: violeta / negro / turquesa */
+    :root{
+      --bg1: #0b0b0f; --bg2: #1b0f2a; --card: #0f1220;
+      --accent: #6ee7d1; --accent2: #9b5cff; --muted:#9aa3b2;
+      --glass: rgba(255,255,255,0.04);
+    }
+    html,body{ height:100%; margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:#e6eef8; background: linear-gradient(180deg,var(--bg1),var(--bg2)); -webkit-font-smoothing:antialiased; }
+    .wrap{ max-width:1100px; margin:36px auto; padding:28px; }
+    header{ display:flex; align-items:center; gap:18px; justify-content:space-between; }
+    .brand{ display:flex; gap:14px; align-items:center; }
+    .logo {
+      width:68px; height:68px; border-radius:14px;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.06), transparent 20%),
+                  linear-gradient(135deg,var(--accent2), #4ad3c7 70%);
+      box-shadow: 0 10px 30px rgba(155,92,255,0.12), inset 0 -6px 14px rgba(0,0,0,0.25);
+      display:flex; align-items:center; justify-content:center; font-weight:800; font-size:20px;
+    }
+    h1{ margin:0; font-size:1.6rem; letter-spacing:0.4px; }
+    .tag{ color:var(--muted); font-size:0.95rem; margin-top:6px; }
+    nav{ display:flex; gap:8px; align-items:center; }
+    .btn {
+      background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.06); color:var(--accent); padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:700;
+      text-decoration:none;
+    }
+    .btn.primary{ background: linear-gradient(90deg,var(--accent2), var(--accent)); color:#021617; border:none; box-shadow:0 8px 30px rgba(155,92,255,0.12); }
+    .hero{ display:flex; gap:28px; margin-top:22px; align-items:center; flex-wrap:wrap; }
+    .hero-left{ flex:1; min-width:260px; }
+    .hero-right{ width:420px; max-width:40%; min-width:280px; }
+    .panel{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:16px; padding:18px; box-shadow: 0 10px 30px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.03); }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-top:18px; }
+    .card { background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.03); transition: transform .28s ease, box-shadow .28s ease; cursor:pointer; }
+    .card:hover{ transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
+    .card h3{ margin:6px 0 4px; font-size:1.05rem; }
+    .card p{ margin:0; color:var(--muted); font-size:0.9rem; }
+    /* small hero visual */
+    .visual {
+      height:220px; border-radius:12px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center;
+      background: radial-gradient(50% 50% at 10% 10%, rgba(155,92,255,0.12), transparent 10%),
+                  radial-gradient(40% 40% at 90% 80%, rgba(110,231,209,0.06), transparent 10%),
+                  linear-gradient(180deg,#14121a, #0f0712);
+      box-shadow: inset 0 -40px 80px rgba(0,0,0,0.4);
+    }
+    .wave{
+      position:absolute; inset:0; pointer-events:none; opacity:0.22;
+      background: linear-gradient(90deg, transparent 0%, rgba(155,92,255,0.08) 30%, rgba(110,231,209,0.06) 60%, transparent 100%);
+      transform: skewX(-12deg) translateX(-20%);
+      animation: slide 8s linear infinite;
+    }
+    @keyframes slide{ 0%{ transform: translateX(-50%) skewX(-12deg);} 100%{ transform: translateX(70%) skewX(-12deg);} }
+    .small-mix{ position:relative; z-index:2; color:#fff; text-align:center; font-weight:700; }
+    /* styles for included calculator section */
+    section.calc{ margin-top:26px; }
+    .textarea{ width:100%; min-height:120px; padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:var(--accent); resize:vertical; font-family:monospace; font-size:0.95rem; }
+    .controls{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+    .small{ padding:8px 10px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:var(--accent); font-weight:700; cursor:pointer; }
+    .small.ghost{ background:transparent; border:1px solid rgba(255,255,255,0.04) }
+    .results{ margin-top:12px; font-family:monospace; white-space:pre-wrap; color:#dffbf6; background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.03); }
+    footer{ text-align:center; color:var(--muted); margin-top:26px; font-size:0.9rem; }
+    @media(max-width:900px){ .hero-right{ max-width:100%; order: -1 } header{ flex-direction:column; align-items:flex-start } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">DJ</div>
+        <div>
+          <h1>DJ Estadística 1987</h1>
+          <div class="tag">Dándole ritmo a los datos 🎶 — calculadoras estadísticas online</div>
+        </div>
+      </div>
+      <nav>
+        <a class="btn" href="#calculadoras">Calculadoras</a>
+        <a class="btn" href="#media">Media & Varianza</a>
+        <a class="btn" href="#csv">Análisis CSV</a>
+        <a class="btn primary" href="#contacto">Contacto</a>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <div class="hero-left">
+        <div class="panel">
+          <h2 style="margin:0 0 8px">Bienvenido — herramientas con ritmo</h2>
+          <p style="margin:0; color:var(--muted)">Calcula medias, desviaciones, percentiles y más. Diseñado para estudiantes, docentes y profesionales. Empieza probando la calculadora rápida o sube tu CSV para análisis completo.</p>
+          <div class="grid" style="margin-top:16px">
+            <div class="card" onclick="document.getElementById('media').scrollIntoView({behavior:'smooth'})">
+              <h3>📈 Media & Varianza</h3>
+              <p>Calculadora rápida: media, mediana, moda, varianza y z-scores.</p>
+            </div>
+            <div class="card">
+              <h3>🎯 Probabilidad</h3>
+              <p>Binomial, Poisson y distribuciones básicas (Próximamente).</p>
+            </div>
+            <div class="card">
+              <h3>📊 Regresión</h3>
+              <p>Regresión lineal y correlación (próximamente).</p>
+            </div>
+            <div class="card">
+              <h3>💾 Análisis CSV</h3>
+              <p>Sube un CSV y procesa columnas numéricas con un clic.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="panel visual">
+          <div class="wave" aria-hidden="true"></div>
+          <div class="small-mix">
+            <div style="font-size:22px">Mix de Datos</div>
+            <div style="font-size:12px; margin-top:8px; color:rgba(255,255,255,0.9)">Beat: Estadística · Tempo: Precisión</div>
+          </div>
+        </div>
+        <div style="height:14px"></div>
+        <div class="panel" style="text-align:center">
+          <div style="font-weight:800; color:var(--accent2)">Comienza ahora</div>
+          <div style="margin-top:8px" class="controls">
+            <a class="btn primary" href="#media">Usar calculadora</a>
+            <a class="btn" href="#calculadoras">Ver todas</a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Calculadoras (sección con la calculadora completa incluida) -->
+    <section id="calculadoras" class="calc">
+      <div class="panel">
+        <h2 id="media">📈 Media, Mediana & Varianza</h2>
+        <div style="color:var(--muted); margin-bottom:8px">Pega números separados por comas/espacios o sube un CSV (una columna) — la calculadora hará el resto.</div>
+
+        <label for="numbers" style="display:block; font-weight:700; margin-bottom:6px">Datos</label>
+        <textarea id="numbers" class="textarea" placeholder="Ej: 3, 5, 7, 8, 10"></textarea>
+
+        <div style="display:flex; gap:16px; margin-top:10px; align-items:center; flex-wrap:wrap;">
+          <div>
+            <label style="font-weight:700; display:block; margin-bottom:6px">O subir CSV</label>
+            <input type="file" id="file" accept=".csv,text/csv" />
+          </div>
+
+          <div>
+            <label style="font-weight:700; display:block; margin-bottom:6px">Varianza</label>
+            <label style="font-weight:600; color:var(--muted)"><input type="radio" name="varType" value="population" checked> Poblacional</label>
+            &nbsp;
+            <label style="font-weight:600; color:var(--muted)"><input type="radio" name="varType" value="sample"> Muestral</label>
+          </div>
+
+          <div style="margin-left:auto; display:flex; gap:8px;">
+            <button id="calc" class="small">Calcular</button>
+            <button id="clear" class="small ghost">Limpiar</button>
+            <button id="download" class="small ghost">Descargar</button>
+          </div>
+        </div>
+
+        <div id="results" class="results" aria-live="polite" style="margin-top:12px"></div>
+      </div>
+
+      <!-- secciones futuras / placeholders -->
+      <div style="height:14px"></div>
+      <div class="grid">
+        <div class="panel">
+          <h3>🎯 Probabilidad</h3>
+          <p style="color:var(--muted)">Calculadora binomial / poisson / normal (en desarrollo).</p>
+        </div>
+        <div class="panel">
+          <h3>📊 Regresión</h3>
+          <p style="color:var(--muted)">Regresión lineal simple y matriz de correlación (próximamente).</p>
+        </div>
+        <div class="panel">
+          <h3>🧮 ANOVA</h3>
+          <p style="color:var(--muted)">Comparación de medias entre grupos (próximamente).</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="csv" style="margin-top:20px">
+      <div class="panel">
+        <h3>💾 Análisis de CSV</h3>
+        <p style="color:var(--muted)">Sube un CSV con columnas numéricas y luego usa las herramientas para seleccionar la columna que quieras analizar. (Funcionalidad avanzada - la agregaremos pronto.)</p>
+      </div>
+    </section>
+
+    <section id="contacto" style="margin-top:20px">
+      <div class="panel">
+        <h3>Contacto</h3>
+        <p style="color:var(--muted)">¿Quieres que añada una calculadora específica o un logo? Escríbeme en tu README o en la descripción del repo.</p>
+        <div style="margin-top:8px"><a target="_blank" rel="noopener" href="https://github.com/djestadistica1987" class="btn">Mi GitHub</a></div>
+      </div>
+    </section>
+
+    <footer>
+      Hecho con ❤️ por DJ Estadística 1987 — Diseño creativo · Gratis · Fácil de usar
+    </footer>
+  </div>
+
+<!-- ---------- JavaScript (calculadora) ---------- -->
+<script>
+/* parse + csv read */
+function parseNumbers(text){
+  if(!text) return [];
+  const cleaned = text.replace(/,/g,' ').trim();
+  const parts = cleaned.split(/\s+/);
+  const nums = parts.map(s=> { const n=parseFloat(s); return isNaN(n) ? null : n; }).filter(x=> x !== null);
+  return nums;
+}
+function readCSVFile(file){ 
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload = e => {
+      const text = e.target.result;
+      // toma números de todo el CSV: extrae tokens numéricos
+      const tokens = text.replace(/\r/g,' ').replace(/,/g,' ').split(/\s+/);
+      const nums = tokens.map(t=> parseFloat(t)).filter(n => !isNaN(n));
+      resolve(nums);
+    };
+    reader.onerror = () => reject('error leyendo archivo');
+    reader.readAsText(file);
+  });
+}
+
+/* statistics */
+function mean(arr){ if(arr.length===0) return NaN; return arr.reduce((a,b)=>a+b,0)/arr.length; }
+function median(arr){
+  if(arr.length===0) return NaN;
+  const s = [...arr].sort((a,b)=>a-b);
+  const m = s.length;
+  const mid = Math.floor(m/2);
+  return (m%2===1)? s[mid] : (s[mid-1]+s[mid])/2;
+}
+function modes(arr){
+  if(arr.length===0) return [];
+  const freq = {};
+  arr.forEach(v=> { freq[v] = (freq[v]||0)+1; });
+  let max = 0;
+  for(const k in freq) if(freq[k]>max) max=freq[k];
+  const result = [];
+  for(const k in freq) if(freq[k]===max) result.push(parseFloat(k));
+  if(max===1) return [];
+  return result;
+}
+function variance(arr, sample=false){
+  if(arr.length===0) return NaN;
+  const m = mean(arr);
+  const s = arr.reduce((acc,x)=> acc + Math.pow(x-m,2), 0);
+  return s / (arr.length - (sample?1:0));
+}
+function stddev(arr, sample=false){ return Math.sqrt(variance(arr, sample)); }
+function percentile(arr, p){
+  if(arr.length===0) return NaN;
+  const s = [...arr].sort((a,b)=>a-b);
+  if(p<=0) return s[0];
+  if(p>=100) return s[s.length-1];
+  const idx = (p/100) * (s.length - 1);
+  const lo = Math.floor(idx), hi = Math.ceil(idx);
+  if(lo===hi) return s[lo];
+  return s[lo] + (s[hi]-s[lo])*(idx-lo);
+}
+function zscores(arr){
+  const m = mean(arr);
+  const sd = stddev(arr);
+  if(sd===0) return arr.map(()=>0);
+  return arr.map(x => (x - m)/sd);
+}
+
+/* UI wiring */
+const ta = document.getElementById('numbers');
+const fileInput = document.getElementById('file');
+const calcBtn = document.getElementById('calc');
+const clearBtn = document.getElementById('clear');
+const resultsDiv = document.getElementById('results');
+const downloadBtn = document.getElementById('download');
+
+let lastResultsText = '';
+
+async function gatherNumbers(){
+  const file = fileInput.files[0];
+  if(file){
+    try{
+      const nums = await readCSVFile(file);
+      return nums;
+    }catch(e){
+      alert('No se pudo leer el CSV');
+      return [];
+    }
+  }
+  return parseNumbers(ta.value);
+}
+
+calcBtn.addEventListener('click', async ()=>{
+  const arr = await gatherNumbers();
+  if(arr.length===0){
+    resultsDiv.textContent = 'No se detectaron números. Escribe números o sube un CSV.';
+    return;
+  }
+  const sample = document.querySelector('input[name="varType"]:checked').value === 'sample';
+  const m = mean(arr);
+  const med = median(arr);
+  const mod = modes(arr);
+  const varr = variance(arr, sample);
+  const sd = stddev(arr, sample);
+  const p25 = percentile(arr,25);
+  const p50 = percentile(arr,50);
+  const p75 = percentile(arr,75);
+  const zs = zscores(arr);
+
+  let out = '';
+  out += `N = ${arr.length}\n`;
+  out += `Media = ${m}\n`;
+  out += `Mediana = ${med}\n`;
+  out += `Moda = ${ (mod.length===0) ? 'No hay moda (todos únicos)' : mod.join(', ') }\n`;
+  out += `Varianza (${sample ? 'muestral' : 'poblacional'}) = ${varr}\n`;
+  out += `Desviación estándar = ${sd}\n`;
+  out += `Percentil 25 = ${p25}\n`;
+  out += `Percentil 50 (Mediana) = ${p50}\n`;
+  out += `Percentil 75 = ${p75}\n\n`;
+  out += `Z-scores (por orden de entrada):\n${zs.map(z=> z.toFixed(4)).join(', ')}\n\n`;
+  out += `Datos (entrada):\n${arr.join(', ')}\n`;
+
+  resultsDiv.textContent = out;
+  lastResultsText = out;
+});
+
+clearBtn.addEventListener('click', ()=>{
+  ta.value = '';
+  fileInput.value = '';
+  resultsDiv.textContent = '';
+  lastResultsText = '';
+});
+
+downloadBtn.addEventListener('click', ()=>{
+  if(!lastResultsText){
+    alert('No hay resultados para descargar. Calcula primero.');
+    return;
+  }
+  const blob = new Blob([lastResultsText], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'resultados_estadisticos.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>
