@@ -11,7 +11,6 @@
       --teal: #14b8a6;
       --dark: #0f0f16;
       --light: #f1f5f9;
-      --card-bg: rgba(255, 255, 255, 0.05);
     }
 
     body {
@@ -23,117 +22,78 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-    }
-
-    header {
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      padding: 40px 20px 20px;
+      padding: 20px;
     }
 
     h1 {
-      margin: 0;
-      font-size: 2.2rem;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
       background: linear-gradient(90deg, var(--violet), var(--teal));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     p.tagline {
-      margin-top: 8px;
       font-size: 1.1rem;
       color: #a5b4fc;
+      margin-bottom: 30px;
     }
 
-    main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      max-width: 1000px;
-      margin: 0 auto;
+    /* ======== BOTÓN PRINCIPAL ======== */
+    .boton-frecuencia {
+      display: inline-block;
+      padding: 14px 32px;
+      background: linear-gradient(90deg, var(--teal), var(--violet));
+      color: white;
+      text-decoration: none;
+      border-radius: 14px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
     }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .card h3 {
-      margin: 0 0 10px;
-      font-size: 1.3rem;
-      color: var(--teal);
-    }
-
-    .card p {
-      color: #cbd5e1;
-      font-size: 0.95rem;
+    .boton-frecuencia:hover {
+      transform: scale(1.07);
+      box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
     }
 
     footer {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
       text-align: center;
       font-size: 0.9rem;
       color: #a5b4fc;
-      padding: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(0, 0, 0, 0.2);
+      padding: 10px;
     }
 
     @media (max-width: 600px) {
       h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
       }
       p.tagline {
         font-size: 1rem;
       }
-      .card {
-        padding: 16px;
+      .boton-frecuencia {
+        font-size: 1rem;
+        padding: 12px 24px;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>DJ Estadística 1987 🎶</h1>
-    <p class="tagline">Dándole ritmo a los datos — calculadoras estadísticas online</p>
-  </header>
+  <h1>DJ Estadística 1987 🎶</h1>
+  <p class="tagline">Dándole ritmo a los datos — calculadoras estadísticas online</p>
 
-  <main>
-    <div class="card">
-      <h3>📈 Media y Varianza</h3>
-      <p>Calculadora rápida para media, mediana, moda y desviación estándar.</p>
-    </div>
-    <div class="card">
-      <h3>🎯 Probabilidad</h3>
-      <p>Distribuciones Binomial, Normal y Poisson (próximamente).</p>
-    </div>
-    <div class="card">
-      <h3>📊 Regresión Lineal</h3>
-      <p>Analiza relaciones entre variables y calcula correlaciones.</p>
-    </div>
-    <div class="card">
-      <h3>🧮 ANOVA</h3>
-      <p>Comparación de medias entre grupos con análisis de varianza.</p>
-    </div>
-    <div class="card">
-      <h3>💾 Análisis CSV</h3>
-      <p>Sube tu archivo CSV y analiza tus datos directamente en la web.</p>
-    </div>
-  </main>
+  <!-- 🌟 BOTÓN ÚNICO -->
+  <a href="frecuencia.html" class="boton-frecuencia">📊 Crear Tabla de Frecuencia</a>
 
   <footer>
     © 2025 DJ Estadística 1987 — Creado con ritmo 🎵
   </footer>
 </body>
 </html>
-
