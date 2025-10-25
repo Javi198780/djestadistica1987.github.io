@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabla de Frecuencia Simple | DJ Estadística 1987</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f0f16, #1a0b2e);
+      color: #f1f5f9;
+      margin: 0;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      background: linear-gradient(90deg,#8b5cf6,#14b8a6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #a5b4fc;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 90%;
+      max-width: 400px;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      text-align: center;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+    button {
+      background: linear-gradient(90deg,#8b5cf6,#14b8a6);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: 0.3s;
+      margin-bottom: 20px;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    table {
+      border-collapse: collapse;
+      margin-top: 15px;
+      width: 90%;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px;
+    }
+    th {
+      background: rgba(255, 255, 255, 0.1);
+      color: #14b8a6;
+    }
+    tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    a {
+      display: inline-block;
+      margin-top: 25px;
+      color: #14b8a6;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Tabla de Frecuencia Simple</h1>
+  <p>Introduce una lista de números separados por comas.</p>
+
+  <input id="datos" type="text" placeholder="Ejemplo: 1, 2, 2, 3, 3, 3, 4, 5">
+  <button onclick="generarTabla()">Generar Tabla</button>
+
+  <div id="resultado"></div>
+
+  <a href="index.html">⬅ Volver al inicio</a>
+
+  <script>
+    function generarTabla() {
+      const entrada = document.getElementById("datos").value.trim();
+      const contenedor = document.getElementById("resultado");
+
+      if (!entrada) {
+        contenedor.innerHTML = "⚠️ Por favor, ingresa algunos números.";
+        return;
+      }
+
+      // Convertir texto a números
+      const numeros = entrada.split(",").map(n => parseFloat(n)).filter(n => !isNaN(n));
+
+      if (numeros.length === 0) {
+        contenedor.innerHTML = "⚠️ No se detectaron números válidos.";
+        return;
+      }
+
+      // Contar frecuencias
+      const frecuencias = {};
+      numeros.forEach(n => frecuencias[n] = (frecuencias[n] || 0) + 1);
+
+      const valores = Object.keys(frecuencias).map(Number).sort((a,b)=>a-b);
+      const total = numeros.length;
+      let acumulada = 0;
+
+      // Crear tabla
+      let tabla = `
+        <table>
+          <tr>
+            <th>Valor</th>
+            <th>Frecuencia (f)</th>
+            <th>Frecuencia Relativa (fr)</th>
+            <th>Frecuencia Acumulada (fa)</th>
+          </tr>
+      `;
+
+      valores.forEach(v => {
+        const f = frecuencias[v];
+        const fr = (f / total).toFixed(3);
+        acumulada += f;
+        tabla += `
+          <tr>
+            <td>${v}</td>
+            <td>${f}</td>
+            <td>${fr}</td>
+            <td>${acumulada}</td>
+          </tr>
+        `;
+      });
+
+      tabla += "</table>";
+      contenedor.innerHTML = tabla;
+    }
+  </script>
+</body>
+</html>
