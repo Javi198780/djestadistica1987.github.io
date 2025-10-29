@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 Nave Matemática - Multiplicaciones</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #000020, #000);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+  }
+
+  h1 {
+    text-shadow: 0 0 10px cyan;
+    margin-top: 10px;
+    font-size: 1.5rem;
+  }
+
+  canvas {
+    background: linear-gradient(to bottom, #002244, #000010);
+    border: 3px solid cyan;
+    display: block;
+    margin: 10px auto;
+    border-radius: 12px;
+    width: 95vw;
+    max-width: 600px;
+    height: auto;
+    touch-action: none; /* ✅ para que el dedo controle sin scroll */
+  }
+
+  #reiniciar {
+    display: none;
+    background: linear-gradient(90deg, #00ffff, #0077ff);
+    color: black;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 0 20px cyan;
+    transition: transform 0.2s, box-shadow 0.3s;
+  }
+
+  #reiniciar:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px #00ffff;
+  }
+</style>
+</head>
+<body>
+<h1>🚀 Nave Matemática - Multiplicaciones</h1>
+<canvas id="gameCanvas" width="600" height="420"></canvas>
+<button id="reiniciar">🔄 Comenzar de nuevo</button>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const btnReiniciar = document.getElementById("reiniciar");
+
+let nave = { x: 280, y: 370, w: 40, h: 40, speed: 6 };
+let balas = [];
+let meteoritos = [];
+let operacion = null;
+let score = 0;
+let vidas = 3;
+let activo = true;
+let lastTap = 0;
+
+// 🎯 Nueva operación
+function nuevaOperacion() {
+  const a = Math.floor(Math.random() * 9) + 2;
+  const b = Math.floor(Math.random() * 9) + 2;
+  return { a, b, resultado: a * b };
+}
+
+// ☄️ Crear meteoritos
+function crearMeteoritos() {
+  meteoritos = [];
+  operacion = nuevaOperacion();
+  const correcta = operacion.resultado;
+  let opciones = [correcta];
+
+  while (opciones.length < 3) {
+    let n = Math.floor(Math.random() * 81) + 4;
+    if (!opciones.includes(n)) opciones.push(n);
+  }
+
+  opciones.sort(() => Math.random() - 0.5);
+  for (let i = 0; i < opciones.length; i++) {
+    meteoritos.push({
+      x: 100 + i * 160,
+      y: 0,
+      r: 25,
+      valor: opciones[i],
+      velocidad: 0.5 + Math.random() * 0.4
+    });
+  }
+}
+
+// 🚀 Dibuja la nave
+function drawNave() {
+  ctx.fillStyle = "cyan";
+  ctx.beginPath();
+  ctx.moveTo(nave.x + nave.w / 2, nave.y);
+  ctx.lineTo(nave.x, nave.y + nave.h);
+  ctx.lineTo(nave.x + nave.w, nave.y + nave.h);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// ☄️ Dibuja meteoritos
+function drawMeteoritos() {
+  meteoritos.forEach(m => {
+    ctx.fillStyle = "orange";
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "white";
+    ctx.font = "18px Arial";
+    ctx.fillText(m.valor, m.x - 10, m.y + 6);
+  });
+}
+
+// 🔫 Dibuja balas
+function drawBalas() {
+  ctx.fillStyle = "lime";
+  balas.forEach(b => ctx.fillRect(b.x, b.y, 4, 12));
+}
+
+// 💥 Colisiones
+function verificarImpacto() {
+  for (let b of balas) {
+    for (let m of meteoritos) {
+      const dist = Math.hypot(b.x - m.x, b.y - m.y);
+      if (dist < m.r) {
+        if (m.valor === operacion.resultado) score += 10;
+        else vidas--;
+        crearMeteoritos();
+        balas = [];
+        return;
+      }
+    }
+  }
+}
+
+// 🔄 Update
+function update() {
+  if (!activo) {
+    ctx.fillStyle = "red";
+    ctx.font = "30px Arial Black";
+    ctx.fillText("💥 GAME OVER 💥", 180, 200);
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.fillText(`Puntaje final: ${score}`, 230, 240);
+    btnReiniciar.style.display = "inline-block";
+    return;
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "white";
+  ctx.font = "22px Arial";
+  ctx.fillText(`¿Cuánto es ${operacion.a} × ${operacion.b}?`, 190, 30);
+
+  drawNave();
+  drawMeteoritos();
+  drawBalas();
+
+  meteoritos.forEach(m => {
+    m.y += m.velocidad;
+    if (m.y > canvas.height) crearMeteoritos();
+  });
+
+  balas.forEach(b => b.y -= 6);
+  balas = balas.filter(b => b.y > 0);
+
+  verificarImpacto();
+
+  ctx.fillStyle = "white";
+  ctx.font = "18px Arial";
+  ctx.fillText(`Puntaje: ${score}`, 10, 25);
+  ctx.fillText(`Vidas: ${vidas}`, 520, 25);
+
+  if (vidas <= 0) activo = false;
+
+  requestAnimationFrame(update);
+}
+
+// 🎮 Controles por teclado
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft" && nave.x > 0) nave.x -= nave.speed;
+  if (e.key === "ArrowRight" && nave.x + nave.w < canvas.width) nave.x += nave.speed;
+  if (e.key === " " && activo) {
+    balas.push({ x: nave.x + nave.w / 2 - 2, y: nave.y - 10 });
+  }
+});
+
+// 📱 Controles táctiles (mover con dedo y disparar con doble toque)
+canvas.addEventListener("touchstart", e => {
+  const now = new Date().getTime();
+  const delta = now - lastTap;
+
+  // Doble toque = disparo
+  if (delta < 300 && activo) {
+    balas.push({ x: nave.x + nave.w / 2 - 2, y: nave.y - 10 });
+  }
+  lastTap = now;
+});
+
+canvas.addEventListener("touchmove", e => {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
+  const posX = touch.clientX - rect.left;
+  nave.x = posX - nave.w / 2;
+  nave.x = Math.max(0, Math.min(canvas.width - nave.w, nave.x));
+});
+
+// 🔁 Reiniciar
+btnReiniciar.addEventListener("click", () => {
+  score = 0;
+  vidas = 3;
+  activo = true;
+  btnReiniciar.style.display = "none";
+  crearMeteoritos();
+  update();
+});
+
+crearMeteoritos();
+update();
+</script>
+</body>
+</html>
