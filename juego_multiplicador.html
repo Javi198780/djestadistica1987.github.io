@@ -77,7 +77,6 @@ let operacion = null;
 let score = 0;
 let vidas = 3;
 let activo = true;
-let lastTap = 0;
 
 // 🎯 Nueva operación
 function nuevaOperacion() {
@@ -241,30 +240,45 @@ document.addEventListener("keydown", e => {
   }
 });
 
-// 📱 Mejor disparo táctil
+// 📱 Movimiento táctil MEJORADO
+let fingerId = null;
+
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault();
+  const touch = e.changedTouches[0];
+  fingerId = touch.identifier;
+  moverNaveConDedo(touch);
+  disparar();
+});
+
+canvas.addEventListener("touchmove", e => {
+  e.preventDefault();
+  const touch = Array.from(e.changedTouches).find(t => t.identifier === fingerId);
+  if (!touch) return;
+  moverNaveConDedo(touch);
+});
+
+canvas.addEventListener("touchend", e => {
+  const touch = Array.from(e.changedTouches).find(t => t.identifier === fingerId);
+  if (touch) fingerId = null;
+});
+
+function moverNaveConDedo(touch) {
+  const rect = canvas.getBoundingClientRect();
+  const pos = touch.clientX - rect.left;
+
+  const destino = Math.max(0, Math.min(canvas.width - nave.w, pos - nave.w / 2));
+
+  // Movimiento suave para evitar saltos o regresos
+  nave.x += (destino - nave.x) * 0.35;
+}
+
+// 🔫 Disparar
 function disparar() {
   balas.push({ x: nave.x + nave.w / 2 - 2, y: nave.y - 10 });
   shootSound.currentTime = 0;
   shootSound.play();
 }
-
-canvas.addEventListener("touchstart", e => {
-  e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const pos = e.touches[0].clientX - rect.left;
-
-  nave.x = Math.max(0, Math.min(canvas.width - nave.w, pos - nave.w / 2));
-
-  disparar(); // ✔️ Dispara SIEMPRE que tocas
-});
-
-canvas.addEventListener("touchmove", e => {
-  e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const pos = e.touches[0].clientX - rect.left;
-
-  nave.x = Math.max(0, Math.min(canvas.width - nave.w, pos - nave.w / 2));
-});
 
 // 🔁 Reinicio
 btnReiniciar.addEventListener("click", () => {
@@ -275,12 +289,6 @@ btnReiniciar.addEventListener("click", () => {
   crearMeteoritos();
   update();
 });
-
-crearMeteoritos();
-update();
-</script>
-</body>
-</html>
 
 crearMeteoritos();
 update();
