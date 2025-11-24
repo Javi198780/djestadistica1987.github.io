@@ -1,118 +1,83 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🚀 Nave Matemática - Multiplicaciones</title>
+
 <style>
-  :root{--maxW:600px;}
-  body{
-    margin:0;
+  body {
+    margin: 0;
+    overflow: hidden;
     background: radial-gradient(circle at center, #000020, #000);
-    color:#fff;
-    font-family: 'Poppins', Arial, sans-serif;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:8px;
-    min-height:100vh;
-    box-sizing:border-box;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
   }
 
-  h1{
-    margin:6px 0 0 0;
-    color:cyan;
-    text-shadow:0 0 8px rgba(0,255,255,0.08);
-    font-size:1.2rem;
+  h1 {
+    text-shadow: 0 0 10px cyan;
+    margin-top: 10px;
+    font-size: 1.5rem;
   }
 
-  /* Contenedor que limita el ancho y mantiene la proporción */
-  .stage{
-    width:95vw;
-    max-width:var(--maxW);
-    aspect-ratio:600/420;
-    position:relative;
+  canvas {
+    background: black;
+    border: 3px solid cyan;
+    display: block;
+    margin: 10px auto;
+    border-radius: 12px;
+    width: 95vw;
+    max-width: 600px;
+    height: auto;
+    touch-action: none;
   }
 
-  canvas{
-    width:100%;
-    height:100%;
-    display:block;
-    border-radius:12px;
-    border:3px solid cyan;
-    touch-action:none;
-    background: linear-gradient(to bottom, #002244, #000010);
-    box-sizing:border-box;
+  #reiniciar {
+    display: none;
+    background: linear-gradient(90deg, #00ffff, #0077ff);
+    color: black;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 0 20px cyan;
   }
 
-  /* controles táctiles visibles */
-  .controls{
-    display:flex;
-    gap:18px;
-    justify-content:center;
-    align-items:center;
-    margin-bottom:6px;
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: -5px;
   }
 
-  .btn{
-    width:64px;
-    height:64px;
-    border-radius:50%;
-    border:2px solid rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.06);
-    color:white;
-    font-size:28px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    user-select:none;
-    -webkit-user-select:none;
-    touch-action:manipulation;
+  .btn {
+    width: 70px;
+    height: 70px;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid white;
+    border-radius: 50%;
+    color: white;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
   }
 
-  #reiniciar{
-    display:none;
-    background:linear-gradient(90deg,#00ffff,#0077ff);
-    color:black;
-    border:none;
-    padding:8px 14px;
-    border-radius:10px;
-    font-weight:700;
-    cursor:pointer;
-  }
-
-  /* indicadores (puntaje y vidas) */
-  .hud{
-    position:absolute;
-    left:10px;
-    top:8px;
-    color:white;
-    font-weight:700;
-    text-shadow:0 0 4px rgba(0,0,0,0.6);
-    pointer-events:none;
-  }
-  .hud.right{
-    right:10px;
-    left:auto;
-  }
-
-  @media(min-width:768px){
-    .controls{ display:none; } /* oculta controles en PC */
+  @media(min-width: 768px){
+    .controls { display:none; }
   }
 </style>
 </head>
+
 <body>
 <h1>🚀 Nave Matemática - Multiplicaciones</h1>
 
-<div class="stage" id="stage">
-  <canvas id="gameCanvas" width="600" height="420" aria-label="Juego Nave Matemática"></canvas>
+<canvas id="gameCanvas" width="600" height="420"></canvas>
 
-  <!-- HUD (se posiciona con CSS en absolute) -->
-  <div class="hud" id="pregunta" style="position:absolute; left:12px; top:10px; font-size:18px;">?</div>
-  <div class="hud right" id="info" style="position:absolute; right:12px; top:10px; font-size:18px;">P:0 V:3</div>
-</div>
-
-<!-- Controles móviles -->
 <div class="controls">
   <div class="btn" id="btnLeft">◀</div>
   <div class="btn" id="btnShoot">🔥</div>
@@ -121,206 +86,143 @@
 
 <button id="reiniciar">🔄 Comenzar de nuevo</button>
 
-<!-- sonidos -->
-<audio id="sndShoot" src="https://actions.google.com/sounds/v1/impacts/metal_thin_impact.ogg" preload="auto"></audio>
-<audio id="sndExpl"  src="https://actions.google.com/sounds/v1/explosions/explosion.ogg" preload="auto"></audio>
+<audio id="shootSound" src="https://actions.google.com/sounds/v1/impacts/metal_thin_impact.ogg"></audio>
+<audio id="explosionSound" src="https://actions.google.com/sounds/v1/explosions/explosion.ogg"></audio>
 
 <script>
-/* -----------------------
-   CONFIG Y RETINA-SAFE CANVAS
-   ----------------------- */
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const stage = document.getElementById('stage');
-const preguntaEl = document.getElementById('pregunta');
-const infoEl = document.getElementById('info');
-const reiniciarBtn = document.getElementById('reiniciar');
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const btnReiniciar = document.getElementById("reiniciar");
 
-const sndShoot = document.getElementById('sndShoot');
-const sndExpl  = document.getElementById('sndExpl');
-
-// función para escalar canvas apropiadamente manteniendo resolución interna
-function resizeCanvasToDisplaySize(){
-  // tamaño en CSS pixels del canvas mostrado
-  const rect = canvas.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  const displayWidth  = Math.round(rect.width);
-  const displayHeight = Math.round(rect.height);
-
-  // ajustar tamaño interno real para dpr
-  if (canvas.width !== Math.round(displayWidth * dpr) || canvas.height !== Math.round(displayHeight * dpr)){
-    canvas.width  = Math.round(displayWidth * dpr);
-    canvas.height = Math.round(displayHeight * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // escala lógico para dibujar en CSS px
-  }
-}
-window.addEventListener('resize', resizeCanvasToDisplaySize);
-resizeCanvasToDisplaySize();
-
-/* -----------------------
-   IMÁGENES (usa la ruta que subiste para la nave)
-   ----------------------- */
+// 🔹 IMÁGENES
 const imgNave = new Image();
-imgNave.src = "/mnt/data/4149b05f-277e-4bf4-a15c-886a63c651f9.png"; // <-- ruta de la imagen subida en la sesión
+imgNave.src = "nave.png";
 
 const imgMeteorito = new Image();
-imgMeteorito.src = "meteorito.png"; // si está en tu repo, ok; si quieres que apunte a raw.githubusercontent pon la URL raw
+imgMeteorito.src = "meteorito.png";
 
 const imgFondo = new Image();
-imgFondo.src = "espacio.png"; // idem: ajusta a tu URL si lo necesitas
+imgFondo.src = "fondo.png";
 
-// espera a que al menos la nave y fondo estén cargadas antes de iniciar juego
-let recursosCargados = 0;
-function onRecursoCargado(){ 
-  recursosCargados++;
-  // cuando al menos nave y meteorito y fondo estén listos lanzamos (puede ser 3)
-  if (recursosCargados >= 2) startGame();
+const shootSound = document.getElementById("shootSound");
+const explosionSound = document.getElementById("explosionSound");
+
+// Ajustar canvas a móvil
+function ajustarCanvas() {
+  const ratio = 600 / 420;
+  let w = window.innerWidth * 0.95;
+  if (w > 600) w = 600;
+  let h = w / ratio;
+
+  canvas.style.width = w + "px";
+  canvas.style.height = h + "px";
 }
-imgNave.onload = onRecursoCargado;
-imgMeteorito.onload = onRecursoCargado;
-imgFondo.onload = onRecursoCargado;
+window.addEventListener("resize", ajustarCanvas);
+ajustarCanvas();
 
-/* -----------------------
-   ESTADO DEL JUEGO
-   ----------------------- */
-let activo = true;
+// Objetos del juego
+let nave = { x: 280, y: 360, w: 60, h: 60, speed: 6 };
+let balas = [];
+let meteoritos = [];
+let explosiones = [];
+let operacion = null;
 let score = 0;
 let vidas = 3;
+let activo = true;
 
-let operacion = null;
-function nuevaOperacion(){
-  const a = Math.floor(Math.random()*9)+2;
-  const b = Math.floor(Math.random()*9)+2;
-  operacion = { a, b, resultado: a*b };
-  preguntaEl.textContent = `¿Cuánto es ${a} × ${b}?`;
+// Nueva operación
+function nuevaOperacion() {
+  const a = Math.floor(Math.random() * 9) + 2;
+  const b = Math.floor(Math.random() * 9) + 2;
+  return { a, b, resultado: a * b };
 }
 
-/* -----------------------
-   ENTIDADES
-   ----------------------- */
-const nave = { x: 280, y: 370, w: 60, h: 60, speed: 6 }; // w/h se ajustarán visualmente por img
-let balas = []; // {x,y,w,h}
-let meteoritos = []; // {x,y,r,valor,velocidad}
-let explosiones = []; // animaciones
-
-function crearMeteoritos(){
+// Crear meteoritos
+function crearMeteoritos() {
   meteoritos = [];
-  nuevaOperacion();
+  operacion = nuevaOperacion();
   const correcta = operacion.resultado;
+
   let opciones = [correcta];
-  while(opciones.length < 3){
-    let n = Math.floor(Math.random()*90)+4;
-    if(!opciones.includes(n)) opciones.push(n);
+  while (opciones.length < 3) {
+    let n = Math.floor(Math.random() * 81) + 4;
+    if (!opciones.includes(n)) opciones.push(n);
   }
-  opciones.sort(()=>Math.random()-0.5);
-  // colocar 3 meteoritos horizontalmente (se ajustan a canvas width real)
-  const padding = 60;
-  const step = (canvas.width / (window.devicePixelRatio || 1)) / (opciones.length+1);
-  for(let i=0;i<opciones.length;i++){
-    const x = padding + step*(i+1);
+
+  opciones.sort(() => Math.random() - 0.5);
+
+  for (let i = 0; i < opciones.length; i++) {
     meteoritos.push({
-      x: x,
-      y: -40,
-      r: 40,
+      x: 120 + i * 150,
+      y: 0,
+      r: 35,
       valor: opciones[i],
-      velocidad: 0.8 + Math.random()*0.7
+      velocidad: 0.8 + Math.random() * 0.5,
+      vivo: true
     });
   }
 }
 
-/* -----------------------
-   DIBUJO
-   ----------------------- */
-function drawBackground(){
-  // si tienes fondo, lo estiramos al tamaño CSS (usando canvas.getBoundingClientRect())
-  const rect = canvas.getBoundingClientRect();
-  if(imgFondo.complete){
-    ctx.drawImage(imgFondo, 0, 0, rect.width, rect.height);
-  } else {
-    // fallback: degrade
-    ctx.fillStyle = '#001022';
-    ctx.fillRect(0,0,rect.width,rect.height);
-  }
+// DIBUJAR FONDO
+function drawFondo() {
+  ctx.drawImage(imgFondo, 0, 0, canvas.width, canvas.height);
 }
 
-function drawNave(){
-  const rect = canvas.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  // dibujar imagen centrada en nave.x,nave.y con tamaño nave.w x nave.h (CSS px)
-  if(imgNave.complete){
-    ctx.drawImage(imgNave, nave.x, nave.y, nave.w, nave.h);
-  } else {
-    // fallback: triángulo
-    ctx.fillStyle = 'cyan';
-    ctx.beginPath();
-    ctx.moveTo(nave.x + nave.w/2, nave.y);
-    ctx.lineTo(nave.x, nave.y + nave.h);
-    ctx.lineTo(nave.x + nave.w, nave.y + nave.h);
-    ctx.closePath();
-    ctx.fill();
-  }
+// DIBUJAR NAVE
+function drawNave() {
+  ctx.drawImage(imgNave, nave.x, nave.y, nave.w, nave.h);
 }
 
-function drawMeteoritos(){
-  ctx.font = "18px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
+// DIBUJAR METEORITOS
+function drawMeteoritos() {
   meteoritos.forEach(m => {
-    if(imgMeteorito.complete){
-      ctx.drawImage(imgMeteorito, m.x - m.r, m.y - m.r, m.r*2, m.r*2);
-    } else {
-      ctx.fillStyle = 'orange';
-      ctx.beginPath();
-      ctx.arc(m.x, m.y, m.r, 0, Math.PI*2);
-      ctx.fill();
-    }
-    ctx.fillStyle = 'white';
-    ctx.fillText(String(m.valor), m.x, m.y);
+    ctx.drawImage(imgMeteorito, m.x - m.r, m.y - m.r, m.r * 2, m.r * 2);
+
+    ctx.fillStyle = "white";
+    ctx.font = "18px Arial Black";
+    ctx.textAlign = "center";
+    ctx.fillText(m.valor, m.x, m.y + 8);
   });
 }
 
-function drawBalas(){
-  ctx.fillStyle = 'lime';
-  balas.forEach(b => {
-    ctx.fillRect(b.x, b.y, b.w, b.h);
-  });
+// DIBUJAR BALAS
+function drawBalas() {
+  ctx.fillStyle = "lime";
+  balas.forEach(b => ctx.fillRect(b.x, b.y, 4, 12));
 }
 
-function drawExplosiones(){
-  for(let i = explosiones.length-1; i>=0; i--){
-    const ex = explosiones[i];
-    ex.r += 2;
-    ex.a -= 0.04;
+// DIBUJAR EXPLOSIONES
+function drawExplosiones() {
+  explosiones.forEach((ex, i) => {
+    ex.radio += 2;
+    ex.alpha -= 0.03;
+
     ctx.beginPath();
-    ctx.arc(ex.x, ex.y, ex.r, 0, Math.PI*2);
-    ctx.fillStyle = `rgba(255,150,0,${Math.max(0,ex.a)})`;
+    ctx.arc(ex.x, ex.y, ex.radio, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,150,0,${ex.alpha})`;
     ctx.fill();
-    if(ex.a <= 0) explosiones.splice(i,1);
-  }
+
+    if (ex.alpha <= 0) explosiones.splice(i, 1);
+  });
 }
 
-/* -----------------------
-   COLISIONES
-   ----------------------- */
-function verificarImpacto(){
-  for(let bi = balas.length-1; bi >=0; bi--){
-    const b = balas[bi];
-    for(let mi = meteoritos.length-1; mi>=0; mi--){
-      const m = meteoritos[mi];
-      const dist = Math.hypot((b.x + b.w/2) - m.x, (b.y + b.h/2) - m.y);
-      if(dist < m.r){
-        // explosion
-        explosiones.push({ x: m.x, y: m.y, r: 8, a: 1 });
-        sndExpl.currentTime = 0;
-        sndExpl.play();
+// IMPACTO
+function verificarImpacto() {
+  for (let b of balas) {
+    for (let m of meteoritos) {
+      const dist = Math.hypot(b.x - m.x, b.y - m.y);
+      if (dist < m.r) {
 
-        if(m.valor === operacion.resultado){
+        explosiones.push({ x: m.x, y: m.y, radio: 10, alpha: 1 });
+
+        explosionSound.currentTime = 0;
+        explosionSound.play();
+
+        if (m.valor === operacion.resultado)
           score += 10;
-        } else {
-          vidas -= 1;
-        }
+        else
+          vidas--;
 
-        // reiniciar meteoritos / nueva pregunta
         crearMeteoritos();
         balas = [];
         return;
@@ -329,175 +231,123 @@ function verificarImpacto(){
   }
 }
 
-/* -----------------------
-   DISPARO (compatibilidad móvil)
-   ----------------------- */
+// DISPARAR
 let ultimoDisparo = 0;
-function disparar(){
+function disparar() {
   const ahora = performance.now();
-  if(ahora - ultimoDisparo < 200) return;
+  if (ahora - ultimoDisparo < 250) return;
   ultimoDisparo = ahora;
 
-  // ancho/alto en CSS pixels (canvas escala ya manejado por setTransform)
-  const bw = 6, bh = 14;
-  balas.push({ x: nave.x + nave.w/2 - bw/2, y: nave.y - bh - 4, w: bw, h: bh });
-  sndShoot.currentTime = 0;
-  sndShoot.play();
+  balas.push({ x: nave.x + nave.w/2 - 2, y: nave.y - 10 });
+  shootSound.currentTime = 0;
+  shootSound.play();
 }
 
-/* -----------------------
-   CONTROL DE ENTRADAS
-   ----------------------- */
-let leftPressed = false;
-let rightPressed = false;
+// LOOP PRINCIPAL
+function update() {
+  if (!activo) {
+    ctx.fillStyle = "red";
+    ctx.font = "30px Arial Black";
+    ctx.fillText("💥 GAME OVER 💥", 180, 200);
 
-// teclado
-document.addEventListener('keydown', e => {
-  if(e.key === 'ArrowLeft') leftPressed = true;
-  if(e.key === 'ArrowRight') rightPressed = true;
-  if(e.key === ' ' || e.key === 'Spacebar') disparar();
-});
-document.addEventListener('keyup', e => {
-  if(e.key === 'ArrowLeft') leftPressed = false;
-  if(e.key === 'ArrowRight') rightPressed = false;
-});
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.fillText(`Puntaje final: ${score}`, 240, 240);
 
-// botones táctiles (pointer + touch + click)
-const btnLeft = document.getElementById('btnLeft');
-const btnRight= document.getElementById('btnRight');
-const btnShoot= document.getElementById('btnShoot');
-
-function setupBtnHold(btn, onDown, onUp){
-  btn.addEventListener('pointerdown', e => { e.preventDefault(); onDown(); }, {passive:false});
-  btn.addEventListener('pointerup',   e => { e.preventDefault(); onUp(); }, {passive:false});
-  btn.addEventListener('pointercancel', e => { e.preventDefault(); onUp(); }, {passive:false});
-  btn.addEventListener('touchstart', e => { e.preventDefault(); onDown(); }, {passive:false});
-  btn.addEventListener('touchend', e => { e.preventDefault(); onUp(); }, {passive:false});
-}
-
-setupBtnHold(btnLeft,  ()=> leftPressed = true,  ()=> leftPressed = false);
-setupBtnHold(btnRight, ()=> rightPressed = true, ()=> rightPressed = false);
-
-// disparo botón
-btnShoot.addEventListener('pointerdown', e => { e.preventDefault(); disparar(); }, {passive:false});
-btnShoot.addEventListener('touchstart',  e => { e.preventDefault(); disparar(); }, {passive:false});
-btnShoot.addEventListener('click', e => { e.preventDefault(); disparar(); });
-
-/* arrastra táctil sobre canvas para mover nave */
-canvas.addEventListener('touchstart', e => { e.preventDefault(); });
-canvas.addEventListener('touchmove', e => {
-  e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const tx = e.touches[0].clientX - rect.left;
-  nave.x = tx - nave.w/2;
-}, {passive:false});
-
-/* clic en canvas para moverse/ disparar (opcional) */
-canvas.addEventListener('click', e => {
-  // usar click corto para disparar
-  disparar();
-});
-
-/* -----------------------
-   LÓGICA/UPDATE
-   ----------------------- */
-function update(){
-  resizeCanvasToDisplaySize();
-  // dimensiones en CSS px para dibujar posiciones (ya escaladas con setTransform)
-  const vw = canvas.width / (window.devicePixelRatio || 1);
-  const vh = canvas.height / (window.devicePixelRatio || 1);
-
-  // Fondo
-  drawBackground();
-
-  // mover nave
-  if(leftPressed) nave.x = Math.max(8, nave.x - nave.speed);
-  if(rightPressed) nave.x = Math.min(vw - nave.w - 8, nave.x + nave.speed);
-
-  // dibujar y actualizar meteoritos
-  meteoritos.forEach(m => m.y += m.velocidad);
-  // si alguno se pasa del final -> crearMeteoritos (nueva ronda)
-  if(meteoritos.some(m => m.y - m.r > vh)) crearMeteoritos();
-
-  // actualizar balas
-  balas.forEach(b => b.y -= 7);
-  balas = balas.filter(b => b.y + b.h > -50);
-
-  // dibujar
-  drawMeteoritos();
-  drawBalas();
-  drawNave();
-  drawExplosiones();
-
-  // colisiones
-  verificarImpacto();
-
-  // HUD
-  infoEl.textContent = `P:${score}  V:${vidas}`;
-
-  // game over?
-  if(vidas <= 0){
-    activo = false;
-    // mostrar mensaje central
-    ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect((vw/2)-140, (vh/2)-40, 280, 90);
-    ctx.fillStyle = 'red';
-    ctx.font = '22px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('💥 GAME OVER 💥', vw/2, vh/2 - 2);
-    ctx.fillStyle = 'white';
-    ctx.font = '16px Arial';
-    ctx.fillText(`Puntaje final: ${score}`, vw/2, vh/2 + 22);
-    ctx.restore();
-    reiniciarBtn.style.display = 'inline-block';
+    btnReiniciar.style.display = "inline-block";
     return;
   }
 
+  drawFondo();
+
+  ctx.fillStyle = "white";
+  ctx.font = "22px Arial";
+  ctx.fillText(`¿Cuánto es ${operacion.a} × ${operacion.b}?`, 190, 30);
+
+  drawNave();
+  drawMeteoritos();
+  drawBalas();
+  drawExplosiones();
+
+  meteoritos.forEach(m => {
+    m.y += m.velocidad;
+    if (m.y > canvas.height) crearMeteoritos();
+  });
+
+  balas.forEach(b => b.y -= 7);
+  balas = balas.filter(b => b.y > 0);
+
+  verificarImpacto();
+
+  ctx.fillText(`Puntaje: ${score}`, 10, 25);
+  ctx.fillText(`Vidas: ${vidas}`, 520, 25);
+
+  if (vidas <= 0) activo = false;
+
   requestAnimationFrame(update);
 }
 
-/* -----------------------
-   REINICIAR
-   ----------------------- */
-reiniciarBtn.addEventListener('click', () => {
-  score = 0; vidas = 3; activo = true; reiniciarBtn.style.display='none';
-  crearMeteoritos();
-  balas = []; explosiones = [];
-  requestAnimationFrame(update);
+// TECLADO PC
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") nave.x -= nave.speed;
+  if (e.key === "ArrowRight") nave.x += nave.speed;
+  if (e.key === " " && activo) disparar();
 });
 
-/* -----------------------
-   START
-   ----------------------- */
-function startGame(){
-  // si la imagen de la nave tiene tamaño distinto, ajusta el w/h con proporción
-  // opcional: escalamos la imagen para verse bien
-  const desiredW = 64;
-  const desiredH = 64;
-  if(imgNave.complete){
-    nave.w = desiredW;
-    nave.h = desiredH;
-    // situar nave centrada horizontalmente en CSS píxels
-    const rect = canvas.getBoundingClientRect();
-    nave.x = Math.round(rect.width/2 - nave.w/2);
-    nave.y = Math.round(rect.height - nave.h - 14);
-  }
+// BOTONES MÓVILES
+const btnLeft  = document.getElementById("btnLeft");
+const btnRight = document.getElementById("btnRight");
+const btnShoot = document.getElementById("btnShoot");
 
+function prevent(e){ e.preventDefault(); e.stopPropagation(); }
+
+let leftPressed = false;
+let rightPressed = false;
+
+btnLeft.addEventListener("touchstart", e => { prevent(e); leftPressed = true; });
+btnLeft.addEventListener("touchend",   e => { prevent(e); leftPressed = false; });
+
+btnRight.addEventListener("touchstart", e => { prevent(e); rightPressed = true; });
+btnRight.addEventListener("touchend",   e => { prevent(e); rightPressed = false; });
+
+btnShoot.addEventListener("touchstart", e => { prevent(e); disparar(); });
+
+function moverBotones() {
+  if (leftPressed) nave.x -= nave.speed;
+  if (rightPressed) nave.x += nave.speed;
+  requestAnimationFrame(moverBotones);
+}
+moverBotones();
+
+// TOUCH MÓVIL EN CANVAS
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const pos = e.touches[0].clientX - rect.left;
+  nave.x += (pos - nave.w/2 - nave.x) * 0.4;
+});
+
+canvas.addEventListener("touchmove", e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const pos = e.touches[0].clientX - rect.left;
+  nave.x += (pos - nave.w/2 - nave.x) * 0.4;
+});
+
+// REINICIAR
+btnReiniciar.addEventListener("click", () => {
+  score = 0;
+  vidas = 3;
+  activo = true;
+  btnReiniciar.style.display = "none";
   crearMeteoritos();
-  // iniciar bucle de dibujo
-  requestAnimationFrame(update);
-}
+  update();
+});
 
-// si las imágenes ya venían cargadas (caso raw local), inicia
-if(imgNave.complete && imgMeteorito.complete && imgFondo.complete){
-  startGame();
-}
-
-// seguridad: si no se cargan, igual iniciar después de 1s
-setTimeout(()=>{ if(!activo){} }, 1000);
-
+crearMeteoritos();
+update();
 </script>
 </body>
 </html>
+
 
