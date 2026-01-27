@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Comparador de Dos Campanas de Gauss</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 5px;
+        }
+
+        button {
+            grid-column: span 2;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Comparador Interactivo de Dos Distribuciones Normales</h1>
+<p>Ajusta las medias y desviaciones estándar para comparar dos campanas de Gauss.</p>
+
+<div class="controls">
+    <div>
+        <label>Media distribución 1</label>
+        <input type="number" id="media1" value="0">
+    </div>
+
+    <div>
+        <label>Desviación estándar 1</label>
+        <input type="number" id="desv1" value="1" step="0.1" min="0.1">
+    </div>
+
+    <div>
+        <label>Media distribución 2</label>
+        <input type="number" id="media2" value="0">
+    </div>
+
+    <div>
+        <label>Desviación estándar 2</label>
+        <input type="number" id="desv2" value="1" step="0.1" min="0.1">
+    </div>
+
+    <button onclick="graficar()">Graficar</button>
+</div>
+
+<canvas id="grafico" height="120"></canvas>
+
+<script>
+    let chart;
+
+    // Función densidad normal
+    function normalPDF(x, mean, std) {
+        return (1 / (std * Math.sqrt(2 * Math.PI))) *
+               Math.exp(-0.5 * Math.pow((x - mean) / std, 2));
+    }
+
+    function graficar() {
+        const media1 = parseFloat(document.getElementById("media1").value);
+        const desv1 = parseFloat(document.getElementById("desv1").value);
+        const media2 = parseFloat(document.getElementById("media2").value);
+        const desv2 = parseFloat(document.getElementById("desv2").value);
+
+        const min = Math.min(media1 - 5 * desv1, media2 - 5 * desv2);
+        const max = Math.max(media1 + 5 * desv1, media2 + 5 * desv2);
+
+        const xValues = [];
+        const y1 = [];
+        const y2 = [];
+
+        for (let x = min; x <= max; x += (max - min) / 500) {
+            xValues.push(x.toFixed(2));
+            y1.push(normalPDF(x, media1, desv1));
+            y2.push(normalPDF(x, media2, desv2));
+        }
+
+        const data = {
+            labels: xValues,
+            datasets: [
+                {
+                    label: `Distribución 1 (μ=${media1}, σ=${desv1})`,
+                    data: y1,
+                    borderColor: "blue",
+                    fill: false
+                },
+                {
+                    label: `Distribución 2 (μ=${media2}, σ=${desv2})`,
+                    data: y2,
+                    borderColor: "orange",
+                    fill: false
+                }
+            ]
+        };
+
+        if (chart) {
+            chart.destroy();
+        }
+
+        const ctx = document.getElementById("grafico").getContext("2d");
+        chart = new Chart(ctx, {
+            type: "line",
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: "top"
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Valores"
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Densidad de probabilidad"
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Gráfico inicial
+    graficar();
+</script>
+
+</body>
+</html>
