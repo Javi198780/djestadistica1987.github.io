@@ -5,43 +5,43 @@
 <title>Distribución Normal – Enfermería</title>
 
 <style>
-body {
+body{
     font-family: Arial, sans-serif;
-    background: #eef2f5;
-    padding: 30px;
+    background:#eef2f5;
+    padding:30px;
 }
-.contenedor {
-    background: white;
-    max-width: 800px;
-    margin: auto;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 0 12px rgba(0,0,0,0.15);
+.contenedor{
+    background:white;
+    max-width:900px;
+    margin:auto;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 0 12px rgba(0,0,0,0.15);
 }
-h2 { color: #007bff; }
-input, select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 12px;
+h2{color:#2c5cff;}
+input, select{
+    width:100%;
+    padding:8px;
+    margin-bottom:10px;
 }
-button {
-    width: 100%;
-    padding: 10px;
-    background: #007bff;
-    color: white;
-    border: none;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
+button{
+    width:100%;
+    padding:10px;
+    background:#2c5cff;
+    color:white;
+    border:none;
+    font-size:16px;
+    border-radius:6px;
+    cursor:pointer;
 }
-button:hover { background: #0056b3; }
-canvas {
-    margin-top: 20px;
-    border: 1px solid #ccc;
+button:hover{background:#1e3fd1;}
+canvas{
+    margin-top:20px;
+    border:1px solid #ccc;
 }
-.pasos {
-    margin-top: 15px;
-    font-size: 16px;
+.pasos{
+    margin-top:15px;
+    font-size:16px;
 }
 </style>
 </head>
@@ -52,10 +52,10 @@ canvas {
 <h2>Distribución Normal – Aplicación en Enfermería</h2>
 
 <label>Media (μ)</label>
-<input type="number" id="media" step="any" placeholder="Ej: 120">
+<input type="number" id="media" step="any" placeholder="Ej: 0">
 
 <label>Desviación estándar (σ)</label>
-<input type="number" id="desviacion" step="any" placeholder="Ej: 10">
+<input type="number" id="desviacion" step="any" placeholder="Ej: 1">
 
 <label>Tipo de cálculo</label>
 <select id="tipo">
@@ -63,138 +63,159 @@ canvas {
     <option value="dos">Dos valores: P(a ≤ X ≤ b)</option>
 </select>
 
-<label>Valor X o Límite inferior (a)</label>
-<input type="number" id="x1" step="any">
+<label>Valor X o límite inferior (a)</label>
+<input type="number" id="x1" step="any" placeholder="Ej: 1.96">
 
-<label>Valor superior (b) – solo si eliges dos valores</label>
-<input type="number" id="x2" step="any">
+<label>Valor superior (b)</label>
+<input type="number" id="x2" step="any" placeholder="Solo si eliges dos valores">
 
 <button onclick="calcular()">Calcular y Graficar</button>
 
 <div class="pasos" id="pasos"></div>
 
-<canvas id="grafico" width="700" height="320"></canvas>
+<canvas id="grafico" width="800" height="350"></canvas>
 </div>
 
 <script>
-// Función error
-function erf(x) {
-    const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
-    const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
-    const sign = x < 0 ? -1 : 1;
-    x = Math.abs(x);
-    const t = 1 / (1 + p * x);
-    const y = 1 - (((((a5*t + a4)*t + a3)*t + a2)*t + a1)*t * Math.exp(-x*x));
-    return sign * y;
+// ---------- FUNCIONES MATEMÁTICAS ----------
+function erf(x){
+    const a1=0.254829592,a2=-0.284496736,a3=1.421413741;
+    const a4=-1.453152027,a5=1.061405429,p=0.3275911;
+    const sign=x<0?-1:1;
+    x=Math.abs(x);
+    const t=1/(1+p*x);
+    const y=1-(((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x));
+    return sign*y;
 }
 
-function normalCDF(x, mu, sigma) {
-    return 0.5 * (1 + erf((x - mu) / (sigma * Math.sqrt(2))));
+function normalCDF(x,mu,sigma){
+    return 0.5*(1+erf((x-mu)/(sigma*Math.sqrt(2))));
 }
 
-function normalPDF(x, mu, sigma) {
-    return (1 / (sigma * Math.sqrt(2 * Math.PI))) *
-           Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+function normalPDF(x,mu,sigma){
+    return (1/(sigma*Math.sqrt(2*Math.PI)))*
+           Math.exp(-0.5*Math.pow((x-mu)/sigma,2));
 }
 
-function calcular() {
-    const mu = parseFloat(media.value);
-    const sigma = parseFloat(desviacion.value);
-    const tipo = document.getElementById("tipo").value;
-    const a = parseFloat(document.getElementById("x1").value);
-    const b = parseFloat(document.getElementById("x2").value);
+// ---------- CÁLCULO ----------
+function calcular(){
+    const mu=parseFloat(media.value);
+    const sigma=parseFloat(desviacion.value);
+    const tipo=document.getElementById("tipo").value;
+    const a=parseFloat(x1.value);
+    const b=parseFloat(x2.value);
 
-    if (isNaN(mu) || isNaN(sigma) || isNaN(a) || sigma <= 0) {
-        pasos.innerHTML = "⚠️ Ingrese valores válidos.";
+    if(isNaN(mu)||isNaN(sigma)||isNaN(a)||sigma<=0){
+        pasos.innerHTML="⚠️ Ingrese valores válidos.";
         return;
     }
 
-    let prob, texto;
+    let prob,texto;
 
-    if (tipo === "uno") {
-        prob = normalCDF(a, mu, sigma);
-        texto = `
+    if(tipo==="uno"){
+        prob=normalCDF(a,mu,sigma);
+        texto=`
         <strong>PASO A PASO:</strong><br>
         Z = (${a} − ${mu}) / ${sigma} = ${((a-mu)/sigma).toFixed(2)}<br>
-        P(X ≤ ${a}) = <strong>${prob.toFixed(4)}</strong><br><br>
+        P(X ≤ ${a}) = <strong>${prob.toFixed(3)}</strong><br><br>
         📌 Interpretación clínica:<br>
-        El ${(prob*100).toFixed(2)}% de los pacientes presenta un valor
+        El ${(prob*100).toFixed(1)}% de los pacientes presenta un valor
         menor o igual a ${a}.
         `;
-        dibujarGrafico(mu, sigma, -Infinity, a, prob);
-    } else {
-        if (isNaN(b) || b <= a) {
-            pasos.innerHTML = "⚠️ El valor superior debe ser mayor que el inferior.";
+        dibujarGrafico(mu,sigma,a,null,prob);
+    }else{
+        if(isNaN(b)||b<=a){
+            pasos.innerHTML="⚠️ El valor superior debe ser mayor que el inferior.";
             return;
         }
-        const p1 = normalCDF(a, mu, sigma);
-        const p2 = normalCDF(b, mu, sigma);
-        prob = p2 - p1;
+        const p1=normalCDF(a,mu,sigma);
+        const p2=normalCDF(b,mu,sigma);
+        prob=p2-p1;
 
-        texto = `
+        texto=`
         <strong>PASO A PASO:</strong><br>
-        Z₁ = (${a} − ${mu}) / ${sigma} = ${((a-mu)/sigma).toFixed(2)}<br>
-        Z₂ = (${b} − ${mu}) / ${sigma} = ${((b-mu)/sigma).toFixed(2)}<br><br>
-        P(${a} ≤ X ≤ ${b}) = ${p2.toFixed(4)} − ${p1.toFixed(4)}<br>
-        = <strong>${prob.toFixed(4)}</strong><br><br>
+        Z₁ = ${((a-mu)/sigma).toFixed(2)}<br>
+        Z₂ = ${((b-mu)/sigma).toFixed(2)}<br><br>
+        P(${a} ≤ X ≤ ${b}) = <strong>${prob.toFixed(3)}</strong><br><br>
         📌 Interpretación clínica:<br>
-        El ${(prob*100).toFixed(2)}% de los pacientes se encuentra en este rango.
+        El ${(prob*100).toFixed(1)}% de los pacientes se encuentra en este rango.
         `;
-        dibujarGrafico(mu, sigma, a, b, prob);
+        dibujarGrafico(mu,sigma,a,b,prob);
     }
 
-    pasos.innerHTML = texto;
+    pasos.innerHTML=texto;
 }
 
-function dibujarGrafico(mu, sigma, a, b, prob) {
-    const canvas = document.getElementById("grafico");
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+// ---------- GRÁFICA CORRECTA ----------
+function dibujarGrafico(mu,sigma,a,b,prob){
+    const canvas=document.getElementById("grafico");
+    const ctx=canvas.getContext("2d");
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    const escalaX = canvas.width / 6;
-    const escalaY = canvas.height * 8;
+    const minZ=-4,maxZ=4;
+    const escalaX=canvas.width/(maxZ-minZ);
+    const escalaY=canvas.height*0.9;
+
+    const px=z=>(z-minZ)*escalaX;
+    const py=y=>canvas.height-y*escalaY;
 
     // Campana
     ctx.beginPath();
-    for (let i = -3; i <= 3; i += 0.01) {
-        const x = mu + i * sigma;
-        const y = normalPDF(x, mu, sigma);
-        const px = (i + 3) * escalaX;
-        const py = canvas.height - y * escalaY;
-        if (i === -3) ctx.moveTo(px, py);
-        else ctx.lineTo(px, py);
+    for(let z=minZ;z<=maxZ;z+=0.01){
+        const x=mu+z*sigma;
+        const y=normalPDF(x,mu,sigma);
+        if(z===minZ) ctx.moveTo(px(z),py(y));
+        else ctx.lineTo(px(z),py(y));
     }
-    ctx.strokeStyle = "#007bff";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle="#2c5cff";
+    ctx.lineWidth=2;
     ctx.stroke();
 
     // Área sombreada
     ctx.beginPath();
-    for (let i = -3; i <= 3; i += 0.01) {
-        const x = mu + i * sigma;
-        if (x >= a && x <= b || a === -Infinity && x <= b) {
-            const y = normalPDF(x, mu, sigma);
-            const px = (i + 3) * escalaX;
-            const py = canvas.height - y * escalaY;
-            ctx.lineTo(px, py);
+    ctx.moveTo(px(minZ),canvas.height);
+
+    for(let z=minZ;z<=maxZ;z+=0.01){
+        const x=mu+z*sigma;
+        if((b===null && x<=a)||(b!==null && x>=a && x<=b)){
+            const y=normalPDF(x,mu,sigma);
+            ctx.lineTo(px(z),py(y));
         }
     }
-    ctx.lineTo(canvas.width, canvas.height);
-    ctx.lineTo(0, canvas.height);
+
+    const zFin=b===null?(a-mu)/sigma:(b-mu)/sigma;
+    ctx.lineTo(px(zFin),canvas.height);
     ctx.closePath();
-    ctx.fillStyle = "rgba(0,123,255,0.3)";
+
+    ctx.fillStyle="rgba(70,100,255,0.6)";
     ctx.fill();
 
+    // Líneas verticales
+    ctx.setLineDash([5,5]);
+    ctx.strokeStyle="#000";
+
+    const zA=(a-mu)/sigma;
+    ctx.beginPath();
+    ctx.moveTo(px(zA),0);
+    ctx.lineTo(px(zA),canvas.height);
+    ctx.stroke();
+
+    if(b!==null){
+        const zB=(b-mu)/sigma;
+        ctx.beginPath();
+        ctx.moveTo(px(zB),0);
+        ctx.lineTo(px(zB),canvas.height);
+        ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
     // Texto porcentaje
-    ctx.fillStyle = "#000";
-    ctx.font = "16px Arial";
-    ctx.fillText(
-        (prob * 100).toFixed(2) + " %",
-        canvas.width / 2 - 30,
-        canvas.height / 2
-    );
+    ctx.fillStyle="#000";
+    ctx.font="20px Arial";
+    ctx.fillText(prob.toFixed(3),canvas.width/2-25,canvas.height/2);
 }
 </script>
 
 </body>
 </html>
+
