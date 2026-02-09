@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Distribución Normal – Enfermería</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #eef2f5;
+    padding: 30px;
+}
+.contenedor {
+    background: white;
+    max-width: 700px;
+    margin: auto;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.15);
+}
+h2 {
+    color: #007bff;
+}
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+button:hover {
+    background: #0056b3;
+}
+.resultado, .pasos {
+    margin-top: 20px;
+    font-size: 16px;
+}
+canvas {
+    margin-top: 25px;
+    border: 1px solid #ccc;
+}
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+<h2>Distribución Normal – Aplicación en Enfermería</h2>
+
+<label>Media (μ)</label>
+<input type="number" id="media" step="any" placeholder="Ej: 120 (presión sistólica)">
+
+<label>Desviación estándar (σ)</label>
+<input type="number" id="desviacion" step="any" placeholder="Ej: 10">
+
+<label>Valor observado (X)</label>
+<input type="number" id="x" step="any" placeholder="Ej: 135">
+
+<button onclick="calcular()">Calcular y Graficar</button>
+
+<div class="pasos" id="pasos"></div>
+<div class="resultado" id="resultado"></div>
+
+<canvas id="grafico" width="600" height="300"></canvas>
+</div>
+
+<script>
+// Función error
+function erf(x) {
+    const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+    const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+    const sign = x < 0 ? -1 : 1;
+    x = Math.abs(x);
+    const t = 1 / (1 + p * x);
+    const y = 1 - (((((a5*t + a4)*t + a3)*t + a2)*t + a1)*t * Math.exp(-x*x));
+    return sign * y;
+}
+
+function normalPDF(x, mu, sigma) {
+    return (1 / (sigma * Math.sqrt(2 * Math.PI))) *
+           Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
+}
+
+function calcular() {
+    const mu = parseFloat(media.value);
+    const sigma = parseFloat(desviacion.value);
+    const x = parseFloat(document.getElementById("x").value);
+
+    if (isNaN(mu) || isNaN(sigma) || isNaN(x) || sigma <= 0) {
+        resultado.innerHTML = "⚠️ Ingrese valores válidos.";
+        return;
+    }
+
+    // Paso 1: Z
+    const z = (x - mu) / sigma;
+
+    // Paso 2: Probabilidad
+    const prob = 0.5 * (1 + erf(z / Math.sqrt(2)));
+
+    pasos.innerHTML = `
+    <strong>PASO A PASO:</strong><br><br>
+    1️⃣ Fórmula del valor Z:<br>
+    Z = (X − μ) / σ<br>
+    Z = (${x} − ${mu}) / ${sigma} = <strong>${z.toFixed(2)}</strong><br><br>
+
+    2️⃣ Cálculo de la probabilidad acumulada:<br>
+    P(X ≤ ${x}) = <strong>${prob.toFixed(4)}</strong><br><br>
+
+    📌 Interpretación en Enfermería:<br>
+    El ${ (prob*100).toFixed(2) }% de los pacientes presentan un valor
+    menor o igual a ${x}.
+    `;
+
+    resultado.innerHTML = `<strong>Resultado final:</strong> P(X ≤ ${x}) = ${prob.toFixed(4)}`;
+
+    dibujarGrafico(mu, sigma, x);
+}
+
+function dibujarGrafico(mu, sigma, xValor) {
+    const canvas = document.getElementById("grafico");
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const escalaX = canvas.width / 6;
+    const escalaY = canvas.height * 8;
+
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height);
+
+    for (let i = -3; i <= 3; i += 0.01) {
+        const x = mu + i * sigma;
+        const y = normalPDF(x, mu, sigma);
+
+        const px = (i + 3) * escalaX;
+        const py = canvas.height - y * escalaY;
+
+        ctx.lineTo(px, py);
+    }
+
+    ctx.strokeStyle = "#007bff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Línea del valor X
+    const zx = (xValor - mu) / sigma;
+    const px = (zx + 3) * escalaX;
+
+    ctx.beginPath();
+    ctx.moveTo(px, 0);
+    ctx.lineTo(px, canvas.height);
+    ctx.strokeStyle = "red";
+    ctx.setLineDash([5,5]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+}
+</script>
+
+</body>
+</html>
