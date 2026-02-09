@@ -12,16 +12,14 @@ body {
 }
 .contenedor {
     background: white;
-    max-width: 700px;
+    max-width: 800px;
     margin: auto;
     padding: 25px;
     border-radius: 10px;
     box-shadow: 0 0 12px rgba(0,0,0,0.15);
 }
-h2 {
-    color: #007bff;
-}
-input {
+h2 { color: #007bff; }
+input, select {
     width: 100%;
     padding: 8px;
     margin-bottom: 12px;
@@ -36,16 +34,14 @@ button {
     border-radius: 6px;
     cursor: pointer;
 }
-button:hover {
-    background: #0056b3;
-}
-.resultado, .pasos {
-    margin-top: 20px;
-    font-size: 16px;
-}
+button:hover { background: #0056b3; }
 canvas {
-    margin-top: 25px;
+    margin-top: 20px;
     border: 1px solid #ccc;
+}
+.pasos {
+    margin-top: 15px;
+    font-size: 16px;
 }
 </style>
 </head>
@@ -56,20 +52,28 @@ canvas {
 <h2>Distribución Normal – Aplicación en Enfermería</h2>
 
 <label>Media (μ)</label>
-<input type="number" id="media" step="any" placeholder="Ej: 120 (presión sistólica)">
+<input type="number" id="media" step="any" placeholder="Ej: 120">
 
 <label>Desviación estándar (σ)</label>
 <input type="number" id="desviacion" step="any" placeholder="Ej: 10">
 
-<label>Valor observado (X)</label>
-<input type="number" id="x" step="any" placeholder="Ej: 135">
+<label>Tipo de cálculo</label>
+<select id="tipo">
+    <option value="uno">Un valor: P(X ≤ x)</option>
+    <option value="dos">Dos valores: P(a ≤ X ≤ b)</option>
+</select>
+
+<label>Valor X o Límite inferior (a)</label>
+<input type="number" id="x1" step="any">
+
+<label>Valor superior (b) – solo si eliges dos valores</label>
+<input type="number" id="x2" step="any">
 
 <button onclick="calcular()">Calcular y Graficar</button>
 
 <div class="pasos" id="pasos"></div>
-<div class="resultado" id="resultado"></div>
 
-<canvas id="grafico" width="600" height="300"></canvas>
+<canvas id="grafico" width="700" height="320"></canvas>
 </div>
 
 <script>
@@ -84,6 +88,10 @@ function erf(x) {
     return sign * y;
 }
 
+function normalCDF(x, mu, sigma) {
+    return 0.5 * (1 + erf((x - mu) / (sigma * Math.sqrt(2))));
+}
+
 function normalPDF(x, mu, sigma) {
     return (1 / (sigma * Math.sqrt(2 * Math.PI))) *
            Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
@@ -92,39 +100,53 @@ function normalPDF(x, mu, sigma) {
 function calcular() {
     const mu = parseFloat(media.value);
     const sigma = parseFloat(desviacion.value);
-    const x = parseFloat(document.getElementById("x").value);
+    const tipo = document.getElementById("tipo").value;
+    const a = parseFloat(document.getElementById("x1").value);
+    const b = parseFloat(document.getElementById("x2").value);
 
-    if (isNaN(mu) || isNaN(sigma) || isNaN(x) || sigma <= 0) {
-        resultado.innerHTML = "⚠️ Ingrese valores válidos.";
+    if (isNaN(mu) || isNaN(sigma) || isNaN(a) || sigma <= 0) {
+        pasos.innerHTML = "⚠️ Ingrese valores válidos.";
         return;
     }
 
-    // Paso 1: Z
-    const z = (x - mu) / sigma;
+    let prob, texto;
 
-    // Paso 2: Probabilidad
-    const prob = 0.5 * (1 + erf(z / Math.sqrt(2)));
+    if (tipo === "uno") {
+        prob = normalCDF(a, mu, sigma);
+        texto = `
+        <strong>PASO A PASO:</strong><br>
+        Z = (${a} − ${mu}) / ${sigma} = ${((a-mu)/sigma).toFixed(2)}<br>
+        P(X ≤ ${a}) = <strong>${prob.toFixed(4)}</strong><br><br>
+        📌 Interpretación clínica:<br>
+        El ${(prob*100).toFixed(2)}% de los pacientes presenta un valor
+        menor o igual a ${a}.
+        `;
+        dibujarGrafico(mu, sigma, -Infinity, a, prob);
+    } else {
+        if (isNaN(b) || b <= a) {
+            pasos.innerHTML = "⚠️ El valor superior debe ser mayor que el inferior.";
+            return;
+        }
+        const p1 = normalCDF(a, mu, sigma);
+        const p2 = normalCDF(b, mu, sigma);
+        prob = p2 - p1;
 
-    pasos.innerHTML = `
-    <strong>PASO A PASO:</strong><br><br>
-    1️⃣ Fórmula del valor Z:<br>
-    Z = (X − μ) / σ<br>
-    Z = (${x} − ${mu}) / ${sigma} = <strong>${z.toFixed(2)}</strong><br><br>
+        texto = `
+        <strong>PASO A PASO:</strong><br>
+        Z₁ = (${a} − ${mu}) / ${sigma} = ${((a-mu)/sigma).toFixed(2)}<br>
+        Z₂ = (${b} − ${mu}) / ${sigma} = ${((b-mu)/sigma).toFixed(2)}<br><br>
+        P(${a} ≤ X ≤ ${b}) = ${p2.toFixed(4)} − ${p1.toFixed(4)}<br>
+        = <strong>${prob.toFixed(4)}</strong><br><br>
+        📌 Interpretación clínica:<br>
+        El ${(prob*100).toFixed(2)}% de los pacientes se encuentra en este rango.
+        `;
+        dibujarGrafico(mu, sigma, a, b, prob);
+    }
 
-    2️⃣ Cálculo de la probabilidad acumulada:<br>
-    P(X ≤ ${x}) = <strong>${prob.toFixed(4)}</strong><br><br>
-
-    📌 Interpretación en Enfermería:<br>
-    El ${ (prob*100).toFixed(2) }% de los pacientes presentan un valor
-    menor o igual a ${x}.
-    `;
-
-    resultado.innerHTML = `<strong>Resultado final:</strong> P(X ≤ ${x}) = ${prob.toFixed(4)}`;
-
-    dibujarGrafico(mu, sigma, x);
+    pasos.innerHTML = texto;
 }
 
-function dibujarGrafico(mu, sigma, xValor) {
+function dibujarGrafico(mu, sigma, a, b, prob) {
     const canvas = document.getElementById("grafico");
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -132,34 +154,45 @@ function dibujarGrafico(mu, sigma, xValor) {
     const escalaX = canvas.width / 6;
     const escalaY = canvas.height * 8;
 
+    // Campana
     ctx.beginPath();
-    ctx.moveTo(0, canvas.height);
-
     for (let i = -3; i <= 3; i += 0.01) {
         const x = mu + i * sigma;
         const y = normalPDF(x, mu, sigma);
-
         const px = (i + 3) * escalaX;
         const py = canvas.height - y * escalaY;
-
-        ctx.lineTo(px, py);
+        if (i === -3) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
     }
-
     ctx.strokeStyle = "#007bff";
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Línea del valor X
-    const zx = (xValor - mu) / sigma;
-    const px = (zx + 3) * escalaX;
-
+    // Área sombreada
     ctx.beginPath();
-    ctx.moveTo(px, 0);
-    ctx.lineTo(px, canvas.height);
-    ctx.strokeStyle = "red";
-    ctx.setLineDash([5,5]);
-    ctx.stroke();
-    ctx.setLineDash([]);
+    for (let i = -3; i <= 3; i += 0.01) {
+        const x = mu + i * sigma;
+        if (x >= a && x <= b || a === -Infinity && x <= b) {
+            const y = normalPDF(x, mu, sigma);
+            const px = (i + 3) * escalaX;
+            const py = canvas.height - y * escalaY;
+            ctx.lineTo(px, py);
+        }
+    }
+    ctx.lineTo(canvas.width, canvas.height);
+    ctx.lineTo(0, canvas.height);
+    ctx.closePath();
+    ctx.fillStyle = "rgba(0,123,255,0.3)";
+    ctx.fill();
+
+    // Texto porcentaje
+    ctx.fillStyle = "#000";
+    ctx.font = "16px Arial";
+    ctx.fillText(
+        (prob * 100).toFixed(2) + " %",
+        canvas.width / 2 - 30,
+        canvas.height / 2
+    );
 }
 </script>
 
