@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejercicio de Enfermería – Presión Arterial</title>
+
+    <!-- Librería para generar Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 650px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #2c7be5;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1a5dcc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h1>EJERCICIO DE ENFERMERÍA</h1>
+
+    <p>
+        Ingrese su nombre y descargue el archivo Excel.  
+        El desarrollo del ejercicio debe realizarlo el estudiante.
+    </p>
+
+    <label for="nombre">Nombre del estudiante:</label>
+    <input type="text" id="nombre" placeholder="Ej. María Fernanda López">
+
+    <button onclick="generarExcel()">Descargar archivo Excel</button>
+</div>
+
+<script>
+function generarExcel() {
+
+    const nombre = document.getElementById("nombre").value.trim();
+
+    if (nombre === "") {
+        alert("Por favor, ingrese su nombre.");
+        return;
+    }
+
+    // ------------------------------
+    // 1) GENERAR LOS 1000 DATOS DE PRESIÓN
+    // ------------------------------
+    let presiones = [];
+    for (let i = 0; i < 1000; i++) {
+        let u = Math.random();
+        let v = Math.random();
+        let z = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+        let presion = Math.round(120 + 20 * z); // media 120, desviación 20
+        presion = Math.max(70, Math.min(200, presion));
+        presiones.push({ "Presión sistólica (mmHg)": presion });
+    }
+
+    // ------------------------------
+    // 2) HOJA DATOS
+    // ------------------------------
+    const hojaDatos = XLSX.utils.json_to_sheet(presiones);
+
+    // ------------------------------
+    // 3) HOJA EJERCICIO
+    // ------------------------------
+    const ejercicio = [
+        ["PARTE PRÁCTICA EN EXCEL"],
+        [""],
+        ["Ejercicio: Análisis Estadístico de Presión Arterial Sistólica"],
+        [""],
+        ["Nombre del estudiante:", nombre],
+        [""],
+        ["Contexto:"],
+        ["Una enfermera ha registrado las mediciones de la presión arterial sistólica (en mmHg) de un grupo de pacientes."],
+        ["Se desea realizar un análisis estadístico para comprender mejor la distribución de estos datos."],
+        [""],
+        ["1. Tabla de frecuencia por intervalos"],
+        ["- Máximo"],
+        ["- Mínimo"],
+        ["- N (número de datos)"],
+        ["- Número de intervalos (k)"],
+        ["- Rango"],
+        ["- Amplitud del intervalo"],
+        ["Construya una tabla de frecuencia por intervalos."],
+        [""],
+        ["2. Cálculo de medidas estadísticas"],
+        ["- Media"],
+        ["- Varianza"],
+        ["- Desviación estándar"],
+        ["- Coeficiente de variación"],
+        [""],
+        ["3. Identificación de valores extremos"],
+        ["- Presión sistólica más alta"],
+        ["- Presión sistólica más baja"],
+        [""],
+        ["4. Gráficos de distribución"],
+        ["- Histograma o gráfico de barras por intervalos"],
+        [""],
+        ["5. Probabilidades asumiendo distribución normal"],
+        ["Calcule:"],
+        ["- P(90 ≤ X ≤ 120)  → Presión normal"],
+        ["- P(X ≥ 140) → Hipertensión"],
+        ["- P(X < 90) → Hipotensión"],
+        ["- P(121 ≤ X ≤ 139) → Prehipertensión"]
+    ];
+
+    const hojaEjercicio = XLSX.utils.aoa_to_sheet(ejercicio);
+
+    // ------------------------------
+    // 4) CREAR EXCEL
+    // ------------------------------
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, hojaDatos, "Datos");
+    XLSX.utils.book_append_sheet(wb, hojaEjercicio, "Ejercicio");
+
+    XLSX.writeFile(wb, "Ejercicio_Presion_Arterial.xlsx");
+}
+</script>
+
+</body>
+</html>
