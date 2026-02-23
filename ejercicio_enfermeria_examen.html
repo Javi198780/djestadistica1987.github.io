@@ -74,10 +74,14 @@ function generarExcel() {
     }
 
     // ------------------------------
-    // 1) GENERAR LOS 1000 DATOS DE PRESIÓN
+    // 1) GENERAR LOS DATOS DE PRESIÓN
     // ------------------------------
     let presiones = [];
-    for (let i = 0; i < 1000; i++) {
+
+    // Número aleatorio entre 300 y 350
+    let cantidad = Math.floor(Math.random() * (350 - 300 + 1)) + 300;
+
+    for (let i = 0; i < cantidad; i++) {
         let u = Math.random();
         let v = Math.random();
         let z = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
