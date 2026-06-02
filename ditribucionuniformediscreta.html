@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Distribución de Probabilidad Discreta</title>
+
+<style>
+body{
+    font-family: Arial;
+    margin:20px;
+}
+
+textarea{
+    width:100%;
+    height:100px;
+}
+
+table{
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,td{
+    border:1px solid black;
+    padding:6px;
+    text-align:center;
+}
+
+button{
+    margin:3px;
+    padding:8px;
+}
+
+#resultado{
+    margin-top:15px;
+    font-weight:bold;
+    color:blue;
+}
+</style>
+</head>
+<body>
+
+<h2>DISTRIBUCIÓN DE PROBABILIDAD DISCRETA</h2>
+
+<p>
+Ingrese los datos separados por comas
+(Máximo 1000 datos):
+</p>
+
+<textarea id="datos">1,2,3,4,5,6,7,8</textarea>
+<br>
+
+<button onclick="generarTabla()">
+Generar Tabla
+</button>
+
+<hr>
+
+<label>a:</label>
+<input type="number" id="a">
+
+<label>b:</label>
+<input type="number" id="b">
+
+<br><br>
+
+<button onclick="probMenorIgual()">P(X ≤ a)</button>
+<button onclick="probMenor()">P(X < a)</button>
+<button onclick="probMayorIgual()">P(X ≥ a)</button>
+<button onclick="probIgual()">P(X = a)</button>
+<button onclick="probMayor()">P(X > a)</button>
+<button onclick="probIntervalo()">P(a ≤ X ≤ b)</button>
+<button onclick="calcularMedia()">Media (μ)</button>
+
+<div id="tabla"></div>
+
+<div id="resultado"></div>
+
+<script>
+
+let datos = [];
+let valores = [];
+let probabilidades = [];
+
+function generarTabla(){
+
+    let texto =
+    document.getElementById("datos").value;
+
+    datos = texto.split(",")
+                 .map(x => Number(x.trim()))
+                 .filter(x => !isNaN(x));
+
+    if(datos.length === 0){
+        alert("Ingrese datos válidos");
+        return;
+    }
+
+    if(datos.length > 1000){
+        alert("Máximo 1000 datos");
+        return;
+    }
+
+    let frecuencias = {};
+
+    datos.forEach(x=>{
+        frecuencias[x] =
+        (frecuencias[x] || 0) + 1;
+    });
+
+    valores =
+    Object.keys(frecuencias)
+          .map(Number)
+          .sort((a,b)=>a-b);
+
+    probabilidades = [];
+
+    let html = `
+    <h3>Tabla de Distribución</h3>
+    <table>
+    <tr>
+        <th>X</th>
+        <th>Frecuencia</th>
+        <th>P(X)</th>
+    </tr>`;
+
+    valores.forEach(v=>{
+
+        let f = frecuencias[v];
+        let p = f / datos.length;
+
+        probabilidades.push(p);
+
+        html += `
+        <tr>
+            <td>${v}</td>
+            <td>${f}</td>
+            <td>${p.toFixed(4)}</td>
+        </tr>`;
+    });
+
+    html += "</table>";
+
+    document.getElementById("tabla").innerHTML = html;
+
+    document.getElementById("resultado").innerHTML =
+    `Total de datos: ${datos.length}`;
+}
+
+function probMenorIgual(){
+
+    let a = Number(
+    document.getElementById("a").value);
+
+    let favorables =
+    datos.filter(x => x <= a).length;
+
+    let p = favorables/datos.length;
+
+    mostrar(`P(X ≤ ${a}) = ${p.toFixed(4)}`);
+}
+
+function probMenor(){
+
+    let a = Number(
+    document.getElementById("a").value);
+
+    let favorables =
+    datos.filter(x => x < a).length;
+
+    let p = favorables/datos.length;
+
+    mostrar(`P(X < ${a}) = ${p.toFixed(4)}`);
+}
+
+function probMayorIgual(){
+
+    let a = Number(
+    document.getElementById("a").value);
+
+    let favorables =
+    datos.filter(x => x >= a).length;
+
+    let p = favorables/datos.length;
+
+    mostrar(`P(X ≥ ${a}) = ${p.toFixed(4)}`);
+}
+
+function probIgual(){
+
+    let a = Number(
+    document.getElementById("a").value);
+
+    let favorables =
+    datos.filter(x => x == a).length;
+
+    let p = favorables/datos.length;
+
+    mostrar(`P(X = ${a}) = ${p.toFixed(4)}`);
+}
+
+function probMayor(){
+
+    let a = Number(
+    document.getElementById("a").value);
+
+    let favorables =
+    datos.filter(x => x > a).length;
+
+    let p = favorables/datos.length;
+
+    mostrar(`P(X > ${a}) = ${p.toFixed(4)}`);
+}
+
+function probIntervalo(){
+
+    let a = Number(
+    document.getElementById("a").value);
+
+    let b = Number(
+    document.getElementById("b").value);
+
+    let favorables =
+    datos.filter(
+        x => x >= a && x <= b
+    ).length;
+
+    let p = favorables/datos.length;
+
+    mostrar(
+    `P(${a} ≤ X ≤ ${b}) = ${p.toFixed(4)}`
+    );
+}
+
+function calcularMedia(){
+
+    let suma = 0;
+
+    datos.forEach(x=>{
+        suma += x;
+    });
+
+    let media = suma / datos.length;
+
+    mostrar(
+    `Media (μ) = ${media.toFixed(4)}`
+    );
+}
+
+function mostrar(texto){
+    document.getElementById("resultado")
+    .innerHTML = texto;
+}
+
+generarTabla();
+
+</script>
+
+</body>
+</html>
