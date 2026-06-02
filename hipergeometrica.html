@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Distribución Hipergeométrica</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    margin:20px;
+    max-width:1000px;
+}
+
+h1{
+    text-align:center;
+    color:#003366;
+}
+
+input{
+    width:80px;
+    padding:5px;
+    margin:5px;
+}
+
+button{
+    padding:10px;
+    margin:5px;
+    cursor:pointer;
+}
+
+table{
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,td{
+    border:1px solid black;
+    padding:8px;
+    text-align:center;
+}
+
+.seccion{
+    background:#f5f5f5;
+    padding:15px;
+    margin-top:15px;
+    border-radius:10px;
+}
+
+.resultado{
+    font-size:18px;
+    color:blue;
+    font-weight:bold;
+}
+
+.formula{
+    font-size:22px;
+    color:#aa0000;
+}
+</style>
+
+</head>
+<body>
+
+<h1>DISTRIBUCIÓN HIPERGEOMÉTRICA</h1>
+
+<div class="seccion">
+
+<h3>Parámetros</h3>
+
+<label>N (Población):</label>
+<input type="number" id="N" value="20">
+
+<label>K (Éxitos):</label>
+<input type="number" id="K" value="7">
+
+<label>n (Muestra):</label>
+<input type="number" id="n" value="5">
+
+<label>x:</label>
+<input type="number" id="x" value="3">
+
+<br><br>
+
+<button onclick="calcular()">Calcular P(X=x)</button>
+
+<button onclick="mostrarTabla()">
+Mostrar Tabla
+</button>
+
+</div>
+
+<div id="explicacion"></div>
+
+<div id="tabla"></div>
+
+<script>
+
+//========================
+// FACTORIAL
+//========================
+
+function factorial(num){
+
+    if(num <= 1) return 1;
+
+    let resultado = 1;
+
+    for(let i=2;i<=num;i++){
+        resultado *= i;
+    }
+
+    return resultado;
+}
+
+//========================
+// COMBINACION
+//========================
+
+function combinacion(n,r){
+
+    if(r < 0 || r > n){
+        return 0;
+    }
+
+    return factorial(n) /
+          (factorial(r) *
+           factorial(n-r));
+}
+
+//========================
+// HIPERGEOMETRICA
+//========================
+
+function dhyper(x,K,M,n){
+
+    return (
+        combinacion(K,x) *
+        combinacion(M,n-x)
+    ) /
+    combinacion(K+M,n);
+
+}
+
+//========================
+// CALCULAR
+//========================
+
+function calcular(){
+
+    let N =
+    Number(document.getElementById("N").value);
+
+    let K =
+    Number(document.getElementById("K").value);
+
+    let n =
+    Number(document.getElementById("n").value);
+
+    let x =
+    Number(document.getElementById("x").value);
+
+    let M = N - K;
+
+    let c1 = combinacion(K,x);
+
+    let c2 = combinacion(M,n-x);
+
+    let c3 = combinacion(N,n);
+
+    let prob = dhyper(x,K,M,n);
+
+    let porcentaje =
+    (prob*100).toFixed(2);
+
+    let html = "";
+
+    html += `
+    <div class="seccion">
+
+    <h2>Fórmula Hipergeométrica</h2>
+
+    <div class="formula">
+    P(X=x)=
+    [C(K,x) × C(N-K,n-x)]
+    /
+    C(N,n)
+    </div>
+
+    <h2>Sustitución de valores</h2>
+
+    <div class="formula">
+    P(X=${x})=
+    [C(${K},${x}) ×
+    C(${M},${n-x})]
+    /
+    C(${N},${n})
+    </div>
+
+    <h2>Cálculo de combinaciones</h2>
+
+    <p>
+    C(${K},${x}) = ${c1}
+    </p>
+
+    <p>
+    C(${M},${n-x}) = ${c2}
+    </p>
+
+    <p>
+    C(${N},${n}) = ${c3}
+    </p>
+
+    <h2>Reemplazando</h2>
+
+    <p>
+    P(X=${x}) =
+    (${c1} × ${c2})
+    /
+    ${c3}
+    </p>
+
+    <p>
+    P(X=${x}) =
+    ${(c1*c2)}
+    /
+    ${c3}
+    </p>
+
+    <h2>Resultado</h2>
+
+    <div class="resultado">
+    P(X=${x}) =
+    ${prob.toFixed(6)}
+    </div>
+
+    <h2>Interpretación</h2>
+
+    <p>
+    Existe un
+    <b>${porcentaje}%</b>
+    de probabilidad de que
+    exactamente
+    <b>${x}</b>
+    elementos exitosos
+    aparezcan en una muestra
+    de tamaño
+    <b>${n}</b>.
+    </p>
+
+    </div>
+    `;
+
+    document.getElementById(
+        "explicacion"
+    ).innerHTML = html;
+}
+
+//========================
+// TABLA
+//========================
+
+function mostrarTabla(){
+
+    let N =
+    Number(document.getElementById("N").value);
+
+    let K =
+    Number(document.getElementById("K").value);
+
+    let n =
+    Number(document.getElementById("n").value);
+
+    let M = N - K;
+
+    let xmin =
+    Math.max(0,n-M);
+
+    let xmax =
+    Math.min(n,K);
+
+    let html = `
+    <div class="seccion">
+
+    <h2>Tabla de Distribución</h2>
+
+    <table>
+
+    <tr>
+        <th>X</th>
+        <th>P(X=x)</th>
+    </tr>
+    `;
+
+    for(let x=xmin;
+        x<=xmax;
+        x++){
+
+        let p =
+        dhyper(x,K,M,n);
+
+        html += `
+        <tr>
+            <td>${x}</td>
+            <td>${p.toFixed(6)}</td>
+        </tr>
+        `;
+    }
+
+    html += `
+    </table>
+    </div>
+    `;
+
+    document.getElementById(
+        "tabla"
+    ).innerHTML = html;
+}
+
+//========================
+// CARGA INICIAL
+//========================
+
+calcular();
+mostrarTabla();
+
+</script>
+
+</body>
+</html>
