@@ -151,7 +151,11 @@ if(sexo==="Masculino"){
 sexo === "Masculino" ? 4 : 0;
 
 
-        let efectoServicio = 0;
+      let servicio =
+["Emergencia","Hospitalización","Consulta Externa"]
+[Math.floor(Math.random()*3)];
+
+let efectoServicio = 0;
 
 if(servicio === "Emergencia"){
     efectoServicio = 8;
@@ -159,6 +163,8 @@ if(servicio === "Emergencia"){
 else if(servicio === "Hospitalización"){
     efectoServicio = 4;
 }
+
+        
 let presion =
 Math.round(
     90 +
