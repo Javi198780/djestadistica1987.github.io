@@ -122,14 +122,27 @@ function generarExcel(){
 
     for(let i=1;i<=cantidad;i++){
 
+       let sexo =
+Math.random() < 0.5 ? "Masculino" : "Femenino";
+
+let peso;
+
+if(sexo==="Masculino"){
+    peso = Math.floor(Math.random()*71)+55; // 55-125 kg
+}else{
+    peso = Math.floor(Math.random()*56)+45; // 45-100 kg
+}
         let edad =
         Math.floor(Math.random()*63)+18;
 
-        let peso =
-        Math.floor(Math.random()*61)+45;
 
-        let talla =
-        Number((1.45 + Math.random()*0.45).toFixed(2));
+      let talla;
+
+      if(sexo === "Masculino"){
+    talla = Number((1.60 + Math.random()*0.30).toFixed(2)); // 1.60-1.90
+       }else{
+    talla = Number((1.45 + Math.random()*0.30).toFixed(2)); // 1.45-1.75
+       }
 
         let imc =
         peso/(talla*talla);
@@ -142,19 +155,22 @@ function generarExcel(){
             (Math.random()*20-10)
         );
 
-        datos.push({
+     datos.push({
 
-            "Paciente":i,
+    "Paciente":i,
 
-            "Edad (años)":edad,
+    "Sexo":sexo,
 
-            "Peso (kg)":peso,
+    "Edad (años)":edad,
 
-            "Talla (m)":talla,
+    "Peso (kg)":peso,
 
-            "IMC":Number(imc.toFixed(2)),
+    "Talla (m)":talla,
 
-            "Presión Sistólica (mmHg)":presion
+    "IMC":Number(imc.toFixed(2)),
+
+    "Presión Sistólica (mmHg)":presion
+
 
         });
 
