@@ -150,12 +150,22 @@ if(sexo==="Masculino"){
         let efectoSexo =
 sexo === "Masculino" ? 4 : 0;
 
+
+        let efectoServicio = 0;
+
+if(servicio === "Emergencia"){
+    efectoServicio = 8;
+}
+else if(servicio === "Hospitalización"){
+    efectoServicio = 4;
+}
 let presion =
 Math.round(
     90 +
     edad*0.40 +
     imc*0.60 +
     efectoSexo +
+    efectoServicio +
     (Math.random()*20-10)
 );
 
@@ -174,6 +184,8 @@ Math.round(
     "Talla (m)":talla,
 
     "IMC":Number(imc.toFixed(2)),
+         
+     "Servicio": servicio,
 
     "Presión Sistólica (mmHg)":presion
 
@@ -331,7 +343,18 @@ Math.round(
 
         ["11. Prueba de normalidad"],
 ["Evalúe si la variable presión arterial presenta distribución normal."],
-["Interprete los resultados."]
+["Interprete los resultados."],
+        ["13. ANOVA"],
+["Compare la presión arterial entre los diferentes servicios hospitalarios."],
+["Formule H₀ y H₁."],
+["Realice un ANOVA de una vía."],
+["Interprete el valor p."],
+["Determine si existen diferencias significativas entre los grupos."],
+        ["14. Muestreo"],
+["Determine el tamaño de la muestra utilizada."],
+["Explique si la muestra representa adecuadamente a la población."],
+["Indique las ventajas y limitaciones del tamaño muestral obtenido."],
+["Describa un método de muestreo apropiado para este estudio."]
         
     ];
 
