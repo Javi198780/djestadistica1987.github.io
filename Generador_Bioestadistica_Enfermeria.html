@@ -2,34 +2,49 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Generador de Ejercicios de Bioestadística</title>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
+
 body{
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     background:#f4f6f9;
     padding:40px;
 }
 
 .contenedor{
-    max-width:700px;
+    max-width:800px;
+    margin:auto;
     background:white;
     padding:30px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,.15);
+    border-radius:12px;
+    box-shadow:0 0 15px rgba(0,0,0,.15);
 }
 
 h1{
     color:#2c3e50;
+    text-align:center;
+}
+
+p{
+    color:#555;
+}
+
+label{
+    font-weight:bold;
 }
 
 input{
     width:100%;
-    padding:10px;
+    padding:12px;
     margin-top:10px;
     margin-bottom:20px;
+    border:1px solid #ccc;
+    border-radius:6px;
 }
 
 button{
@@ -37,33 +52,50 @@ button{
     color:white;
     border:none;
     padding:12px 20px;
-    border-radius:5px;
+    border-radius:6px;
     cursor:pointer;
+    font-size:16px;
 }
 
 button:hover{
     background:#125ca1;
 }
+
+.info{
+    margin-top:20px;
+    padding:15px;
+    background:#eef5ff;
+    border-left:5px solid #1976d2;
+}
+
 </style>
+
 </head>
 
 <body>
 
 <div class="contenedor">
 
-<h1>Generador de Ejercicios de Bioestadística</h1>
+<h1>📊 Generador de Ejercicios de Bioestadística</h1>
 
 <p>
-Se generará automáticamente un caso de estudio para Enfermería.
+Este sistema genera automáticamente un conjunto de datos para que el estudiante realice el análisis estadístico en Excel.
 </p>
 
 <label>Nombre del estudiante</label>
 
-<input type="text" id="nombre">
+<input
+type="text"
+id="nombre"
+placeholder="Ingrese su nombre">
 
 <button onclick="generarExcel()">
-Descargar ejercicio
+📥 Descargar ejercicio
 </button>
+
+<div class="info">
+Se generarán entre 300 y 1000 registros aleatorios de pacientes.
+</div>
 
 </div>
 
@@ -75,128 +107,177 @@ function generarExcel(){
     document.getElementById("nombre").value.trim();
 
     if(nombre===""){
-        alert("Ingrese su nombre");
+        alert("Ingrese el nombre del estudiante.");
         return;
     }
 
-    // ==========================
-    // GENERAR DATOS
-    // ==========================
+    // ==================================
+    // DATOS
+    // ==================================
 
     let datos = [];
 
     let cantidad =
-    Math.floor(Math.random()*31)+50; // 50 a 80
+    Math.floor(Math.random()*701)+300;
 
     for(let i=1;i<=cantidad;i++){
 
         let edad =
-        Math.floor(Math.random()*46)+20;
+        Math.floor(Math.random()*63)+18;
 
-        let ruido =
-        Math.floor(Math.random()*21)-10;
+        let peso =
+        Math.floor(Math.random()*61)+45;
+
+        let talla =
+        Number((1.45 + Math.random()*0.45).toFixed(2));
+
+        let imc =
+        peso/(talla*talla);
 
         let presion =
         Math.round(
-            90 + edad*0.8 + ruido
+            90 +
+            edad*0.40 +
+            imc*0.60 +
+            (Math.random()*20-10)
         );
 
         datos.push({
+
             "Paciente":i,
-            "Edad":edad,
-            "Presión Sistólica":presion
+
+            "Edad (años)":edad,
+
+            "Peso (kg)":peso,
+
+            "Talla (m)":talla,
+
+            "IMC":Number(imc.toFixed(2)),
+
+            "Presión Sistólica (mmHg)":presion
+
         });
 
     }
 
-    // ==========================
+    // ==================================
     // HOJA DATOS
-    // ==========================
+    // ==================================
 
     const hojaDatos =
     XLSX.utils.json_to_sheet(datos);
 
-    // ==========================
+    // ==================================
     // CASO
-    // ==========================
+    // ==================================
 
     const caso = [
 
-        ["CASO DE ESTUDIO"],
+        ["CASO DE INVESTIGACIÓN EN ENFERMERÍA"],
+
         [""],
 
-        ["Nombre del estudiante",nombre],
+        ["Nombre del estudiante", nombre],
 
         [""],
 
         ["Contexto"],
 
-        ["Una enfermera desea estudiar la relación existente entre la edad y la presión arterial sistólica de los pacientes atendidos en una unidad de salud."],
+        ["Durante una campaña de prevención cardiovascular se registró información de varios pacientes."],
 
-        ["Para ello se registró la edad y la presión arterial sistólica de un grupo de pacientes."],
+        ["Se recopiló la edad, peso, talla, IMC y presión arterial sistólica."],
 
-        ["Utilice los datos proporcionados para realizar el análisis estadístico solicitado."]
+        ["La información será utilizada para realizar un análisis estadístico y explorar posibles relaciones entre las variables."],
+
+        [""],
+
+        ["Objetivo"],
+
+        ["Analizar estadísticamente las características de los pacientes atendidos."]
     ];
 
     const hojaCaso =
     XLSX.utils.aoa_to_sheet(caso);
 
-    // ==========================
-    // PREGUNTAS
-    // ==========================
+    // ==================================
+    // ACTIVIDADES
+    // ==================================
 
     const preguntas = [
 
-        ["ACTIVIDADES"],
+        ["ACTIVIDADES PROPUESTAS"],
 
         [""],
 
-        ["1. Determine:"],
+        ["1. Estadística descriptiva"],
+
+        ["Calcule para Edad, Peso, IMC y Presión Arterial:"],
+
         ["- Número de observaciones"],
-        ["- Edad mínima"],
-        ["- Edad máxima"],
-        ["- Presión mínima"],
-        ["- Presión máxima"],
+        ["- Media"],
+        ["- Mediana"],
+        ["- Moda"],
+        ["- Rango"],
+        ["- Varianza"],
+        ["- Desviación estándar"],
+        ["- Coeficiente de variación"],
 
         [""],
 
-        ["2. Calcule:"],
-        ["- Media de la edad"],
-        ["- Media de la presión arterial"],
-        ["- Desviación estándar de la edad"],
-        ["- Desviación estándar de la presión"],
+        ["2. Valores extremos"],
+
+        ["Determine el valor máximo y mínimo de cada variable."],
 
         [""],
 
-        ["3. Construya:"],
-        ["- Histograma de edades"],
-        ["- Histograma de presión arterial"],
+        ["3. Tablas de frecuencia"],
+
+        ["Construya una tabla de frecuencia para la Edad."],
+
+        ["Construya una tabla de frecuencia para la Presión Arterial."],
 
         [""],
 
-        ["4. Correlación"],
-        ["- Calcule el coeficiente de correlación de Pearson"],
-        ["- Interprete el resultado"],
+        ["4. Gráficos"],
+
+        ["- Histograma de Edad"],
+        ["- Histograma de IMC"],
+        ["- Histograma de Presión Arterial"],
 
         [""],
 
-        ["5. Regresión lineal"],
-        ["- Obtenga la ecuación de regresión"],
-        ["- Grafique la nube de puntos"],
-        ["- Grafique la recta de regresión"],
+        ["5. Correlación"],
+
+        ["Determine la relación entre:"],
+
+        ["- Edad y Presión Arterial"],
+        ["- IMC y Presión Arterial"],
+
+        ["Calcule el coeficiente de correlación de Pearson."],
+
+        ["Interprete los resultados."],
 
         [""],
 
-        ["6. Conclusión"],
-        ["Redacte una conclusión basada en los resultados obtenidos."]
+        ["6. Regresión lineal"],
+
+        ["Obtenga una ecuación de regresión para predecir la presión arterial."],
+
+        ["Interprete la pendiente del modelo."],
+
+        [""],
+
+        ["7. Conclusiones"],
+
+        ["Redacte al menos tres conclusiones basadas en el análisis realizado."]
     ];
 
     const hojaPreguntas =
     XLSX.utils.aoa_to_sheet(preguntas);
 
-    // ==========================
-    // LIBRO
-    // ==========================
+    // ==================================
+    // CREAR LIBRO
+    // ==================================
 
     const wb =
     XLSX.utils.book_new();
@@ -216,16 +297,16 @@ function generarExcel(){
     XLSX.utils.book_append_sheet(
         wb,
         hojaPreguntas,
-        "Preguntas"
+        "Actividades"
     );
 
-    // ==========================
+    // ==================================
     // DESCARGAR
-    // ==========================
+    // ==================================
 
     XLSX.writeFile(
         wb,
-        "Ejercicio_Bioestadistica.xlsx"
+        "Ejercicio_Bioestadistica_Enfermeria.xlsx"
     );
 
 }
