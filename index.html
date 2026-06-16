@@ -1,126 +1,333 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DJ Estadística 1987 🎶</title>
-  <style>
-    /* ======== ESTILO GENERAL ======== */
-    :root {
-      --violet: #8b5cf6;
-      --teal: #14b8a6;
-      --dark: #0f0f16;
-      --light: #f1f5f9;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DJ Estadística 1987 | Bioestadística y Probabilidad</title>
+
+<style>
+
+:root{
+    --violet:#8b5cf6;
+    --teal:#14b8a6;
+    --dark:#0f0f16;
+    --dark2:#1a0b2e;
+    --light:#f8fafc;
+    --card:#1e293b;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg,var(--dark),var(--dark2));
+    color:var(--light);
+    min-height:100vh;
+}
+
+header{
+    text-align:center;
+    padding:50px 20px 30px;
+}
+
+header h1{
+    font-size:3rem;
+    background:linear-gradient(90deg,var(--violet),var(--teal));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+header p{
+    margin-top:15px;
+    color:#cbd5e1;
+    font-size:1.1rem;
+}
+
+.contenedor{
+    width:95%;
+    max-width:1200px;
+    margin:auto;
+}
+
+.categoria{
+    margin-bottom:40px;
+}
+
+.categoria h2{
+    margin-bottom:20px;
+    color:#a5b4fc;
+    border-left:5px solid var(--teal);
+    padding-left:12px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:16px;
+    padding:25px;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 25px rgba(139,92,246,.4);
+}
+
+.card h3{
+    margin-bottom:10px;
+}
+
+.card p{
+    color:#cbd5e1;
+    min-height:60px;
+    margin-bottom:20px;
+    line-height:1.5;
+}
+
+.boton{
+    display:inline-block;
+    text-decoration:none;
+    padding:12px 20px;
+    border-radius:10px;
+    background:linear-gradient(90deg,var(--teal),var(--violet));
+    color:white;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.boton:hover{
+    transform:scale(1.05);
+}
+
+.destacado{
+    text-align:center;
+    margin:50px 0;
+    padding:35px;
+    border-radius:20px;
+    background:linear-gradient(
+        135deg,
+        rgba(20,184,166,.2),
+        rgba(139,92,246,.2)
+    );
+}
+
+.destacado h2{
+    margin-bottom:15px;
+}
+
+.destacado p{
+    margin-bottom:20px;
+    color:#cbd5e1;
+}
+
+footer{
+    text-align:center;
+    margin-top:60px;
+    padding:25px;
+    color:#94a3b8;
+    border-top:1px solid rgba(255,255,255,.08);
+}
+
+footer a{
+    color:#a5b4fc;
+    text-decoration:none;
+}
+
+footer a:hover{
+    text-decoration:underline;
+}
+
+@media(max-width:600px){
+
+    header h1{
+        font-size:2rem;
     }
 
-    body {
-      margin: 0;
-      font-family: 'Poppins', system-ui, sans-serif;
-      color: var(--light);
-      background: linear-gradient(135deg, var(--dark), #1a0b2e);
-      background-attachment: fixed;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
+    .card p{
+        min-height:auto;
     }
 
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      background: linear-gradient(90deg, var(--violet), var(--teal));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+}
 
-    p.tagline {
-      font-size: 1.1rem;
-      color: #a5b4fc;
-      margin-bottom: 30px;
-    }
-
-    /* ======== BOTONES ======== */
-    .boton-frecuencia {
-      display: inline-block;
-      padding: 14px 32px;
-      background: linear-gradient(90deg, var(--teal), var(--violet));
-      color: white;
-      text-decoration: none;
-      border-radius: 14px;
-      font-weight: bold;
-      font-size: 1.1rem;
-      transition: all 0.3s ease;
-      box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-      margin: 10px;
-    }
-
-    .boton-frecuencia:hover {
-      transform: scale(1.07);
-      box-shadow: 0 0 25px rgba(139, 92, 246, 0.6);
-    }
-
-    footer {
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
-      text-align: center;
-      font-size: 0.9rem;
-      color: #a5b4fc;
-      padding: 10px;
-    }
-
-    footer small {
-      display: block;
-      margin-top: 6px;
-      color: #94a3b8;
-    }
-
-    footer a {
-      color: #a5b4fc;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 2rem;
-      }
-      p.tagline {
-        font-size: 1rem;
-      }
-      .boton-frecuencia {
-        font-size: 1rem;
-        padding: 12px 24px;
-      }
-    }
-  </style>
+</style>
 </head>
+
 <body>
-  <h1>DJ Estadística 1987 🎶</h1>
-  <p class="tagline">Dándole ritmo a los datos — calculadoras estadísticas online</p>
 
-  <!-- 🌟 BOTONES PRINCIPALES -->
-  <a href="frecuencia.html" class="boton-frecuencia">📊 Crear Tabla de Frecuencia</a>
-  <a href="ejercicio_enfermeria.html" class="boton-frecuencia">🧠 Ejercicio de enfermería de tabla de frecuencia por intervalos</a>
- <a href="distribucion-normal.html" class="boton-frecuencia">🧠 Comparador de distribución normal de tablas de frecuencia</a>
-  <a href="probabilidad_distribucion_normal.html" class="boton-frecuencia">🧠 distribución normal y probabilidad</a>
-    <a href="ditribucionuniformediscreta.html" class="boton-frecuencia">🧠 distribución uniforme discreta</a>
-    <a href="hipergeometrica.html" class="boton-frecuencia">🧠 distribución hipergeometrica</a>
-<a href="ejercicio_enfermeria_examen.html" class="boton-frecuencia">🧠 Ejercicio de enfermería de tabla de frecuencia por intervalos examen final</a>
-  
+<header>
 
-  <footer>
-    © 2025 DJ Estadística 1987 — Creado con ritmo 🎵
-    <small>
-      No recopilamos datos personales ni usamos cookies.
-      <a href="privacidad.html">Política de privacidad</a>
-    </small>
-  </footer>
+<h1>📊 DJ Estadística 1987</h1>
+
+<p>
+Plataforma de Bioestadística, Probabilidad y Análisis de Datos para estudiantes e investigadores.
+</p>
+
+</header>
+
+<div class="contenedor">
+
+<!-- GENERADOR PRINCIPAL -->
+
+<div class="destacado">
+
+<h2>🏥 Generador de Casos Clínicos</h2>
+
+<p>
+Genere automáticamente ejercicios de Bioestadística para Enfermería con datos reales simulados.
+</p>
+
+<a href="Generador_Bioestadistica_Enfermeria.html" class="boton">
+🧪 Abrir Generador
+</a>
+
+</div>
+
+<!-- ESTADÍSTICA DESCRIPTIVA -->
+
+<div class="categoria">
+
+<h2>📈 Estadística Descriptiva</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>📊 Tabla de Frecuencia</h3>
+<p>
+Construya tablas de frecuencia simples y agrupadas automáticamente.
+</p>
+<a href="frecuencia.html" class="boton">Abrir</a>
+</div>
+
+<div class="card">
+<h3>🧠 Ejercicio de Enfermería</h3>
+<p>
+Ejercicio práctico de tablas de frecuencia por intervalos.
+</p>
+<a href="ejercicio_enfermeria.html" class="boton">Abrir</a>
+</div>
+
+<div class="card">
+<h3>🎓 Examen Final</h3>
+<p>
+Generador de ejercicios evaluativos para estudiantes.
+</p>
+<a href="ejercicio_enfermeria_examen.html" class="boton">Abrir</a>
+</div>
+
+</div>
+
+</div>
+
+<!-- DISTRIBUCIONES -->
+
+<div class="categoria">
+
+<h2>📉 Distribuciones de Probabilidad</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>📈 Distribución Normal</h3>
+<p>
+Comparación y análisis de distribuciones normales.
+</p>
+<a href="distribucion-normal.html" class="boton">Abrir</a>
+</div>
+
+<div class="card">
+<h3>🔍 Probabilidad Normal</h3>
+<p>
+Cálculo de probabilidades utilizando distribución normal.
+</p>
+<a href="probabilidad_distribucion_normal.html" class="boton">Abrir</a>
+</div>
+
+<div class="card">
+<h3>🎲 Uniforme Discreta</h3>
+<p>
+Resolución de ejercicios de distribución uniforme discreta.
+</p>
+<a href="ditribucionuniformediscreta.html" class="boton">Abrir</a>
+</div>
+
+<div class="card">
+<h3>📦 Hipergeométrica</h3>
+<p>
+Problemas y cálculos con distribución hipergeométrica.
+</p>
+<a href="hipergeometrica.html" class="boton">Abrir</a>
+</div>
+
+</div>
+
+</div>
+
+<!-- FUTURAS HERRAMIENTAS -->
+
+<div class="categoria">
+
+<h2>🚀 Próximamente</h2>
+
+<div class="grid">
+
+<div class="card">
+<h3>📉 Correlación de Pearson</h3>
+<p>
+Análisis de relación entre variables cuantitativas.
+</p>
+</div>
+
+<div class="card">
+<h3>📈 Regresión Lineal</h3>
+<p>
+Modelos predictivos aplicados a investigaciones.
+</p>
+</div>
+
+<div class="card">
+<h3>🧪 Prueba t de Student</h3>
+<p>
+Comparación de medias en estudios clínicos.
+</p>
+</div>
+
+<div class="card">
+<h3>📋 Chi-Cuadrado</h3>
+<p>
+Análisis de asociación entre variables categóricas.
+</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<footer>
+
+© 2026 DJ Estadística 1987 🎵
+
+<br><br>
+
+Herramientas educativas para Bioestadística, Probabilidad e Investigación.
+
+<br><br>
+
+<a href="privacidad.html">Política de privacidad</a>
+
+</footer>
+
 </body>
 </html>
