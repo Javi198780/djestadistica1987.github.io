@@ -147,13 +147,19 @@ if(sexo==="Masculino"){
         let imc =
         peso/(talla*talla);
 
-        let presion =
-        Math.round(
-            90 +
-            edad*0.40 +
-            imc*0.60 +
-            (Math.random()*20-10)
-        );
+        let efectoSexo =
+sexo === "Masculino" ? 4 : 0;
+
+let presion =
+Math.round(
+    90 +
+    edad*0.40 +
+    imc*0.60 +
+    efectoSexo +
+    (Math.random()*20-10)
+);
+
+       
 
      datos.push({
 
