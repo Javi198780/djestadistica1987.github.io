@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Generador de Ejercicios de Bioestadística</title>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+body{
+    font-family: Arial;
+    background:#f4f6f9;
+    padding:40px;
+}
+
+.contenedor{
+    max-width:700px;
+    background:white;
+    padding:30px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.15);
+}
+
+h1{
+    color:#2c3e50;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    margin-bottom:20px;
+}
+
+button{
+    background:#1976d2;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#125ca1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+<h1>Generador de Ejercicios de Bioestadística</h1>
+
+<p>
+Se generará automáticamente un caso de estudio para Enfermería.
+</p>
+
+<label>Nombre del estudiante</label>
+
+<input type="text" id="nombre">
+
+<button onclick="generarExcel()">
+Descargar ejercicio
+</button>
+
+</div>
+
+<script>
+
+function generarExcel(){
+
+    let nombre =
+    document.getElementById("nombre").value.trim();
+
+    if(nombre===""){
+        alert("Ingrese su nombre");
+        return;
+    }
+
+    // ==========================
+    // GENERAR DATOS
+    // ==========================
+
+    let datos = [];
+
+    let cantidad =
+    Math.floor(Math.random()*31)+50; // 50 a 80
+
+    for(let i=1;i<=cantidad;i++){
+
+        let edad =
+        Math.floor(Math.random()*46)+20;
+
+        let ruido =
+        Math.floor(Math.random()*21)-10;
+
+        let presion =
+        Math.round(
+            90 + edad*0.8 + ruido
+        );
+
+        datos.push({
+            "Paciente":i,
+            "Edad":edad,
+            "Presión Sistólica":presion
+        });
+
+    }
+
+    // ==========================
+    // HOJA DATOS
+    // ==========================
+
+    const hojaDatos =
+    XLSX.utils.json_to_sheet(datos);
+
+    // ==========================
+    // CASO
+    // ==========================
+
+    const caso = [
+
+        ["CASO DE ESTUDIO"],
+        [""],
+
+        ["Nombre del estudiante",nombre],
+
+        [""],
+
+        ["Contexto"],
+
+        ["Una enfermera desea estudiar la relación existente entre la edad y la presión arterial sistólica de los pacientes atendidos en una unidad de salud."],
+
+        ["Para ello se registró la edad y la presión arterial sistólica de un grupo de pacientes."],
+
+        ["Utilice los datos proporcionados para realizar el análisis estadístico solicitado."]
+    ];
+
+    const hojaCaso =
+    XLSX.utils.aoa_to_sheet(caso);
+
+    // ==========================
+    // PREGUNTAS
+    // ==========================
+
+    const preguntas = [
+
+        ["ACTIVIDADES"],
+
+        [""],
+
+        ["1. Determine:"],
+        ["- Número de observaciones"],
+        ["- Edad mínima"],
+        ["- Edad máxima"],
+        ["- Presión mínima"],
+        ["- Presión máxima"],
+
+        [""],
+
+        ["2. Calcule:"],
+        ["- Media de la edad"],
+        ["- Media de la presión arterial"],
+        ["- Desviación estándar de la edad"],
+        ["- Desviación estándar de la presión"],
+
+        [""],
+
+        ["3. Construya:"],
+        ["- Histograma de edades"],
+        ["- Histograma de presión arterial"],
+
+        [""],
+
+        ["4. Correlación"],
+        ["- Calcule el coeficiente de correlación de Pearson"],
+        ["- Interprete el resultado"],
+
+        [""],
+
+        ["5. Regresión lineal"],
+        ["- Obtenga la ecuación de regresión"],
+        ["- Grafique la nube de puntos"],
+        ["- Grafique la recta de regresión"],
+
+        [""],
+
+        ["6. Conclusión"],
+        ["Redacte una conclusión basada en los resultados obtenidos."]
+    ];
+
+    const hojaPreguntas =
+    XLSX.utils.aoa_to_sheet(preguntas);
+
+    // ==========================
+    // LIBRO
+    // ==========================
+
+    const wb =
+    XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        hojaDatos,
+        "Datos"
+    );
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        hojaCaso,
+        "Caso"
+    );
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        hojaPreguntas,
+        "Preguntas"
+    );
+
+    // ==========================
+    // DESCARGAR
+    // ==========================
+
+    XLSX.writeFile(
+        wb,
+        "Ejercicio_Bioestadistica.xlsx"
+    );
+
+}
+
+</script>
+
+</body>
+</html>
